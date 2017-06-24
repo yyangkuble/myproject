@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls modeName="框架初始化" xmlns="http://www.springmvcplus.com/schema/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.springmvcplus.com/schema/sql sql.xsd">
+	
+	<sql id="select_api_by_modename">
+		select * from sys_api where modename=#{modename}
+	</sql>
+	
+	<sql id="log_select_by_where">
+		select * from sys_log ${where} order by updatetime desc
+	</sql>
+	
+	<sql id="watch_request">
+		select d.id as requestid,d.url,d.usetime,d.starttime,d.sqlallusetime,d.sqlcount,(d.usetime-d.sqlallusetime) as javausetime from (select c.id,c.url,c.usetime,c.starttime,sum(sqlusetime) as sqlallusetime,count(sqlusetime) as sqlcount from (select a.id,a.url,a.starttime,(a.endtime-a.starttime) as usetime,(b.endtime-b.starttime) as sqlusetime from sys_request a join sys_request_sql b on a.id=b.request_id) c group by c.starttime,c.url,c.usetime,c.id) d
+	</sql>
+	<sql id="findApiModeName">
+		select distinct modename from sys_api
+	</sql>
+	<sql id="findApiByModename">
+		select * from sys_api where modename = #{modename}
+	</sql>
+	<sql id="weblogin">
+		select * from user where username=#{username} and password=#{password}
+	</sql>
+	<sql id="checkUserName">
+		select count(*) from user where username=#{username}
+	</sql>
+</sqls>

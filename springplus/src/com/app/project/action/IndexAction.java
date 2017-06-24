@@ -1,0 +1,82 @@
+package com.app.project.action;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.alibaba.fastjson.JSON;
+import com.app.project.mode.Menu;
+import com.app.project.mode.User;
+
+import www.springmvcplus.com.services.LogManager;
+import www.springmvcplus.com.services.service.MyService;
+import www.springmvcplus.com.util.MyJSON;
+import www.springmvcplus.com.util.StringUtil;
+
+
+@Controller
+public class IndexAction {
+	@Resource
+	MyService myService;
+	
+	@RequestMapping("/")
+	public String index(HttpServletRequest request) {
+		List<Map<String, Object>> listMaps = myService.getListMaps("SELECT CONCAT('drop table ',table_name,';') as sqls FROM information_schema.`TABLES` WHERE table_schema='test'");
+		for (Map<String, Object> map : listMaps) {
+			System.out.println(map.get("sqls"));
+		}
+		return "redirect:main";
+	}
+	@RequestMapping("/main")
+	public String main(HttpServletRequest request ,HttpServletResponse response) {
+		User user=(User)request.getSession().getAttribute("user");
+		if (user != null) {
+			List<Menu> menus = myService.getListModels("select * from sys_menu where id in(select distinct d.parentid from sys_user_role b join sys_role_menu c on b.roleid=c.roleid join sys_menu d on c.menuid=d.id where b.userid="+user.getId()+" and d.isused=1) order by orderby", Menu.class);
+			request.setAttribute("menusparent", menus);
+			return "plus/main";
+		}else {
+			return "plus/login";
+		}
+	}
+	@RequestMapping("/user/login")
+	public void login(HttpServletRequest request ,HttpServletResponse response) {
+		HttpSession session =request.getSession();
+		String result = null;
+		Map<String, String> parameter=new HashMap<String, String>();
+		if(session.getAttribute("KAPTCHA_SESSION_KEY") ==null){//非法求情
+			result="{\"errormessage\":\"非法请求,请您停止访问\"}";
+		}else if (session.getAttribute("KAPTCHA_SESSION_KEY").equals(request.getParameter("Verification_Code"))) {
+			parameter.put("username", request.getParameter("username"));
+			parameter.put("password", request.getParameter("password"));
+			User user = myService.getModelBySqlId("weblogin", parameter, User.class);
+			if (user==null) {
+				int usercount = Integer.valueOf(myService.getSingleResultBySqlId("checkUserName", parameter));
+				result=StringUtil.valueOf(usercount);
+			}else {
+				session.setAttribute("user", user);
+				//用于验证用户是否登录，没有登录转到登录页面
+				session.setAttribute("username", user.getUsername());
+				result=MyJSON.toJSONString(user);
+			}
+		}else {
+			result="{\"errormessage\":\"验证码不正确\"}";
+		}
+		try {
+			LogManager.saveLog(request, myService);
+			response.getWriter().print(result);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

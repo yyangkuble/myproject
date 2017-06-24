@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls modeName="用户" xmlns="http://www.springmvcplus.com/schema/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.springmvcplus.com/schema/sql sql.xsd">
+	<!-- 通过id查询 -->
+	<sql id="findCustomById">
+		select * from custom where id = #{id}
+	</sql>
+	<!-- 
+C2客户排序
+	字母排序(默认)：A~Z~数字、特殊字符
+	客户等级:A~D
+	生日:依照月1~12，日期从小到大
+	最近拜访客户：拜访日程时间从近到远
+	久未拜访客户：拜访日程时间从远到近
+	年龄:依照1~99,或99~1
+	车险到期日:依照最新日期开始
+	年缴保费: 从高至低
+	年收入：从高到低
+	*注：所有排序选项字段为空的，排到最后，选项相同的，都按字母排
+	
+	
+C3客户筛选
+	类别:营销,增员,所有类别  customType
+	客户等级：A,B,C,D level
+	关系: 缘故,转介绍,陌生开发,自定义（把该用户自定义过的选项都列出来）relationship
+	生日:1月,2月…12月  birthDay
+	车险 : 有,无   car(通过保险结束日期判定)
+	年龄 : 可自己选 起始岁数~结束岁数,如15~48   ageStart ageEnd
+	年缴保费 : 0~1万,1万~5万,5万~10万,10万~20万,20万以上   根据保费whim判定  whimStart whimEnd
+	性别：男,女  sex
+	保险观念：医疗型,理财型,综合型,无观念   hope
+	
+	 -->
+	<sql id="selectCoustom">
+		select * from custom where userId=#{userId}
+		<script>
+			if(customType == '营销' || customType == '增员'){
+				<text>and customType=#{customType}</text>
+			}
+			if(level != null){
+				<text>and level = #{level}</text>
+			}
+			if(birthDay != null){
+				<text>and month(birthDay)=#{birthDay}</text>
+			}
+			if(car != null){
+				if(car == '有'){
+					<text>and carExpireDate is not null and carExpireDate != ''</text>
+				}else{
+					<text>and carExpireDate is null</text>
+				}
+			}
+			if(ageStart != null && ageEnd != null){
+				<text>and age >= #{ageStart} and age <= #{ageEnd}</text>
+			}
+			if(whimStart != null && whimEnd != null){
+				<text>and whim >= #{whimStart} and whim <= #{whimEnd}</text>
+			}
+			if(sex != null){
+				<text>and sex=#{sex}</text>
+			}
+			if(hope != null){
+				<text>and hope=#{hope}</text>
+			}
+			if(relationship != null){
+				<text>and relationship=#{relationship}</text>
+			}
+		</script>
+		<script>
+			if(orderType != null){
+				if(orderType == 'abc'){
+					<text>order by IF(ISNULL(abc),1,0)</text>
+				}else if(orderType == 'customlevel'){
+					<text>order by IF(ISNULL(level),1,0),abc</text>
+				}else if(orderType == 'birthday'){
+					<text>order by IF(ISNULL(month(birthDay)),1,0),abc</text>
+				}else if(orderType == 'visitLateTime'){
+					<text>order by IF(ISNULL(visitLastTime),1,0) desc,abc</text>
+				}else if(orderType == 'visitLongTime'){
+					<text>order by IF(ISNULL(visitLastTime),1,0),abc</text>
+				}else if(orderType == 'age'){
+					<text>order by IF(ISNULL(age),1,0),abc</text>
+				}else if(orderType == 'carExpireDate'){
+					<text>order by IF(ISNULL(carExpireDate),1,0),abc</text>
+				}else if(orderType == 'policy'){
+					<text>order by IF(ISNULL(policy),1,0) desc,abc</text>
+				}else if(orderType == 'yearIncome'){
+					<text>order by IF(ISNULL(yearIncome),1,0) desc,abc</text>
+				}
+			}else{
+				<text>order by IF(ISNULL(abc),1,0)</text>
+			}
+		</script>
+	</sql>
+</sqls>

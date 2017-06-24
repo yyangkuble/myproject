@@ -1,0 +1,47 @@
+vpnad   vpn2015ad
+
+
+
+
+
+
+
+
+
+dihomwang@qq.com
+13009513131
+密码统一用这个吧：BAOXian513131
+
+
+七牛
+dihomwang@qq.com 
+BAOXian513131
+
+支付宝
+阿里云，户名：王涤鸿1212，密碼，dihom1212
+
+mysql密码：dihom1212
+mysql -u root -pdihom1212
+
+880097
+root@39.108.95.173(公)
+172.18.78.150(私有)
+Aliyun Linux 17.1 64位
+
+jdk安装路径：/usr/java/jdk1.7.0_80
+mysql安装路径：/var/lib/mysql
+tomcat 安装路径  /usr/lib/rpm/mysql/apache-tomcat-8.0.44
+tomcat自动启动：http://vod.sjtu.edu.cn/help/Article_Print.asp?ArticleID=626
+停止tomcat  /usr/lib/rpm/mysql/apache-tomcat-8.0.44/bin/shutdown.sh
+启动tomcat  /usr/lib/rpm/mysql/apache-tomcat-8.0.44/bin/startup.sh
+
+/usr/lib/rpm/mysql/apache-tomcat-8.0.44/webapps/ROOT/WEB-INF/classes
+
+ftp连接：点击站点，有连接记录
+
+https://bevpn02.bluex.com.cn/
+
+阿里云帮助文档
+https://help.aliyun.com/document_detail/25425.html?spm=5176.doc25426.6.598.4trJft
+mysql安装
+http://www.cnblogs.com/mjorcen/p/4000371.html

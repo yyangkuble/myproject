@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls modeName="用户" xmlns="http://www.springmvcplus.com/schema/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.springmvcplus.com/schema/sql sql.xsd">
+	<!-- 通过客户id保单查询 -->
+	<sql id="PolicySearch">
+		select * from CustomPolicy where customId=#{customId}
+	</sql>
+	<!-- 通过id保单查询 -->
+	<sql id="PolicySearchById">
+		select * from CustomPolicy where id=#{id}
+	</sql>
+	<!-- 
+		通过客户id客户家庭查询
+	 -->
+	<sql id="FamilySearch">
+		select * from family where customId=#{customId}
+	</sql>
+	<!-- 
+		通过客户id通过id客户家庭查询
+	 -->
+	<sql id="FamilySearchById">
+		select * from family where id=#{id}
+	</sql>
+	<!-- 通过客户id纪念日查询 -->
+	<sql id="CustomImportanceDaySearch">
+		select * from CustomImportanceDay where customId=#{customId}
+	</sql>
+	<!-- 通过id纪念日查询 -->
+	<sql id="CustomImportanceDaySearchById">
+		select * from CustomImportanceDay where id=#{id}
+	</sql>
+</sqls>

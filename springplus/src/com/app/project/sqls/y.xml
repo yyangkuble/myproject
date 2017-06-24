@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls modeName="首页" xmlns="http://www.springmvcplus.com/schema/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.springmvcplus.com/schema/sql sql.xsd">
+	<!-- 消息未读 Y1-->
+	<sql id="notifyAll">
+		select * from NotifyMessage where toUserId=#{userId}
+	</sql>
+	
+</sqls>

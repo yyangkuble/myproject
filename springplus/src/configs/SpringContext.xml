@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:dwr="http://www.directwebremoting.org/schema/spring-dwr"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.directwebremoting.org/schema/spring-dwr http://www.directwebremoting.org/schema/spring-dwr-3.2.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+        
+    <!-- DispatcherServlet Context: defines this servlet's request-processing 
+        infrastructure -->
+    <!-- Enables the Spring MVC @Controller programming model -->
+    <mvc:annotation-driven />
+    <!--<view-controller path="/" view-name="index" /> -->
+    <context:component-scan base-package="com.app.project" />
+    <context:component-scan base-package="www.springmvcplus.com" />
+    <!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+        up static resources in the ${webappRoot}/resources directory -->
+    <mvc:resources mapping="/resource/**" location="/resource/" />
+    <!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+        in the /WEB-INF/views directory -->
+    <bean
+        class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/jsps/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+	<bean id="SpringBeanUtil" class="www.springmvcplus.com.util.SpringBeanUtil" scope="singleton" />
+    <!-- 从这行往下是要添加的 -->
+    <context:annotation-config />
+    <!-- spring mvc plus config -->
+    <bean id="springMVCPlusArgsConfig" class="www.springmvcplus.com.common.SpringMVCPlusArgsConfig">
+    	<!-- 是否强制删除所有映射表 -->
+    	<property name="deleteTable" value="false"/>
+    	<!-- 实体类映射扫描包 -->
+    	<property name="entityRootPackage" value="com.app.project.mode"/>
+    	<!-- sql配置文件扫描包 -->
+    	<property name="xmlSqlRootPackage" value="com.app.project.sqls"/>
+    	<!-- 日志配置，存储日志需要从session中获取user对象，以及确定user类的用户名字段 和 名字字段 -->
+    	<property name="sessionUserKey" value="user"/>
+    	<property name="user_username" value="username"/>
+    	<property name="user_name" value="name"/>
+    	<!-- 不缓存的表，用“,”号隔开 -->
+    	<property name="noRedisTables" value="sys_log,app_request,app_sql"/>
+    	<!-- 用户登录验证，包含这种结尾的url都不进行验证,除了这些结尾的访问都要验证用户是否登录，否者跳转登录页面 -->
+    	<property name="checkLogin" value="false"></property>
+    	<property name="urlFilter" value="/main|/springmvcplus/Verification_Code_image|/login|/|/user/login|.jpg|.swf|.jpeg|.html|.gif|.png|.xml|.css|.js|.gz|.woff|.woff2|.ico"/>
+    	<!-- 是否开启redis数据缓存 ,以及redis地址 和 端口号-->
+    	<property name="redis" value="false"/>
+    	<property name="redisHost" value="localhost"/>
+    	<property name="redisPort" value="6379"/>
+    	<!-- 是否是生产系统，暂时没有用到，预留 -->
+    	<property name="produce" value="false"/>
+    	<!-- 文件保存路径，为""默认存储在resource/files/下 -->
+    	<property name="inputFilePath" value=""/>
+    	<!-- 图片服务器路径，如果为 [项目全路径/resource/files/]，与inputFilePath同时修改，如果自己搭建了文件服务器，填写绝对路径例如：http://www.baidu.com/files/ -->
+    	<property name="fileRootUrl" value=""/>
+    	<!-- 配置应用集群,session共享解决 -->
+    	<property name="sessionRedisHost" value="localhost"/>
+    	<property name="sessionRedisPort" value="6379"/>
+    	<!-- AES加密秘钥 -->
+    	<property name="aesRole" value="yyangkuble"></property>
+    </bean>
+ 	
+    <bean
+        class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="order" value="1" />
+    </bean>
+    
+    <bean
+        class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+        <property name="order" value="2" />
+    </bean>
+    <!--添加结束-->
+    <!-- dataSource -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	   <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+	   
+	   <!-- <property name="url" value="jdbc:mysql://localhost:3306/test" />
+	   <property name="password" value="fa19891122"/> -->
+	   <property name="url" value="jdbc:mysql://39.108.95.173:3306/insurance" />
+	   <property name="password" value="dihom1212"/>
+	   <property name="username" value="root"/>
+	   <!-- 配置初始化大小、最小、最大 -->  
+    <property name="initialSize" value="5" />  
+    <property name="minIdle" value="5" />   
+    <property name="maxActive" value="20" />  
+   
+    <!-- 配置获取连接等待超时的时间 -->  
+    <property name="maxWait" value="60000" />  
+   
+    <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->  
+    <property name="timeBetweenEvictionRunsMillis" value="60000" />  
+   
+    <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->  
+    <property name="minEvictableIdleTimeMillis" value="300000" />  
+    
+    <property name="validationQuery" value="SELECT 'x'" />  
+    <property name="testWhileIdle" value="true" />  
+    <property name="testOnBorrow" value="false" />  
+    <property name="testOnReturn" value="false" />  
+   
+    <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->  
+    <property name="poolPreparedStatements" value="true" />  
+    <property name="maxPoolPreparedStatementPerConnectionSize" value="20" />  
+   
+    <!-- 配置监控统计拦截的filters，去掉后监控界面sql无法统计   
+    <property name="filters" value="stat" />   
+    -->
+	</bean>
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+	<bean id="AppFastInit" class="www.springmvcplus.com.services.AppFastInit" />
+	<!-- 多部分文件上传 -->
+<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+     <property name="maxUploadSize" value="104857600" />
+     <property name="maxInMemorySize" value="4096" />
+     <property name="defaultEncoding" value="UTF-8" />
+</bean>
+	<mvc:interceptors>
+		<bean class="www.springmvcplus.com.services.SpringMVCPlusInterceptor"></bean>
+	</mvc:interceptors>
+	<bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">  
+        <property name="config">  
+            <bean class="com.google.code.kaptcha.util.Config">  
+                <constructor-arg>  
+                    <props>  
+                        <prop key="kaptcha.border">no</prop>  
+                        <prop key="kaptcha.border.color">105,179,90</prop>  
+                        <prop key="kaptcha.textproducer.font.color">26,188,156</prop>  
+                        <prop key="kaptcha.textproducer.char.space">8</prop>
+                        <prop key="kaptcha.image.width">100</prop>  
+                        <prop key="kaptcha.image.height">38</prop>  
+                        <prop key="kaptcha.textproducer.font.size">25</prop>  
+                        <prop key="kaptcha.obscurificator.impl">com.google.code.kaptcha.impl.ShadowGimpy</prop>
+                        <prop key="kaptcha.background.impl">com.google.code.kaptcha.impl.DefaultBackground</prop>
+                        <prop key="kaptcha.background.clear.from">255,255,255</prop>
+                        <prop key="kaptcha.background.clear.to">255,255,255</prop>
+                        <prop key="kaptcha.session.key">KAPTCHA_SESSION_KEY</prop>  
+                        <prop key="kaptcha.textproducer.char.length">4</prop>  
+                        <prop key="kaptcha.textproducer.font.names">宋体,楷体,微软雅黑</prop>  
+                        <prop key="kaptcha.textproducer.impl">com.google.code.kaptcha.text.impl.DefaultTextCreator</prop> 
+                        <prop key="kaptcha.textproducer.char.string">2345678</prop> 
+                        <prop key="kaptcha.noise.impl">com.google.code.kaptcha.impl.NoNoise</prop>
+                        <prop key="kaptcha.noise.color">black</prop>
+                    </props>  
+                </constructor-arg>  
+            </bean>  
+        </property>  
+    </bean>
+	<!--事务模板  需要手动操作事物，可以使用它--> 
+	<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">  
+	    <property name="transactionManager" ref="transactionManager">  
+	    </property>  
+	</bean>  
+	  <!-- 配置事务管理器 -->
+  <bean id="transactionManager"
+    class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+  		<property name="dataSource" ref="dataSource"></property>  
+  </bean>
+  <!-- 通过AOP配置提供事务增强，让service包下所有Bean的所有方法拥有事务 -->
+  <tx:annotation-driven transaction-manager="transactionManager"/>
+  <aop:config proxy-target-class="true" >
+    <aop:pointcut id="serviceMethods"
+      expression="execution(* com.app.project.service..*.*(..)) or execution(* www.springmvcplus.com.services.service..*.*(..))" />
+    <aop:advisor pointcut-ref="serviceMethods" advice-ref="txAdvice" />
+  </aop:config>
+
+ <tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+</tx:advice>
+</beans>

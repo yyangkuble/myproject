@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls modeName="用户角色菜单" xmlns="http://www.springmvcplus.com/schema/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.springmvcplus.com/schema/sql sql.xsd">
+	<!-- 菜单查询 -->
+	<sql id="menu_all">
+		select * from sys_menu
+	</sql>
+	<!-- 按照userid查询子菜单 -->
+	<sql id="menu_by_parentid_and_userid">
+		select c.* from sys_user_role a join sys_role_menu b on a.roleid=b.roleid join sys_menu c on b.menuid=c.id 
+		where c.parentid=#{parentid} and a.userid=#{userid} order by c.orderby
+	</sql>
+	<!-- 通过父id获取子菜单最大的排序代码 -->
+	<sql id="menu_get_max_order_code_by_parentid">
+		select max(orderby)+20 from sys_menu where parentid=#{parentid}
+	</sql>
+	<!--  查询全部角色 -->
+	<sql id="role_all">
+		select * from sys_role
+	</sql>
+	<!-- 通过角色id查询菜单列表 -->
+	<sql id="menuid_by_roleid">
+		select menuid from sys_role_menu where roleid=#{roleid}
+	</sql>
+	<!-- 通过roleid删除所有菜单 -->
+	<sql id="delete_sys_role_menu">
+		delete from sys_role_menu where roleid=#{roleid}
+	</sql>
+	<!-- 通过条件查询用户 -->
+	<sql id="user_select_by_where">
+		select * from user ${where} order by addtime desc
+	</sql>
+	<!-- 检查用户名是否重复 -->
+	<sql id="user_check_username_isused">
+		select count(*) from user where username=#{username}
+	</sql>
+	<!-- 通过userid查询角色 -->
+	<sql id="role_slect_by_userid">
+		select roleid from sys_user_role where userid=#{userid}
+	</sql>
+	<!-- 测试查询通过条件 -->
+	<sql id="test_select_by_where">
+		select * from sys_test 
+		<where>
+			<if if="guanjianci">
+				username like '%${guanjianci}%' or tel like '%${guanjianci}%' or name like '%${guanjianci}%'
+			</if>
+		</where>
+		order by addtime desc
+	</sql>
+	<!-- 查询测试表username是否重复 -->
+	<sql id="test_check_username_isused">
+		select count(*) from sys_test where username=#{username}
+	</sql>
+	<!-- 通过parentid查询菜单 -->
+	<sql id="menu_by_parentid">
+		select * from sys_menu where parentid=#{parentid} order by orderby
+	</sql>
+</sqls>

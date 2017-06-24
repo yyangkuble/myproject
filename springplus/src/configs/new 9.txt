@@ -1,0 +1,106 @@
+传统项目
+	办公OA系统，采购系统，休假系统，erp系统
+	ssh
+	
+互联网项目（电商项目）
+	京东，智联招聘，51job，拉勾网，boss直聘，猎聘网
+	ssm（spring spring mvc mybatis）
+	
+自学能力
+	1：mybatis的作用
+		MyBatis 是支持定制化 SQL、存储过程以及高级映射的优秀的持久层框架。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集
+		MyBatis 本是apache的一个开源项目iBatis
+	2：下载mybatis
+		
+	3：编写测试案例
+	
+mybatis的课程介绍
+	第一天：mybatis的基础
+	第二天：mybatis与spring整合
+	
+	
+mybatis第一天课程
+	1：总结jdbc的缺陷
+		a) 连接池频繁创建与释放浪费性能
+		b）sql语句，参数，结果集 硬编码在代码中，不方便维护
+		
+	2：mybatis入门程序（重点）
+		mybaits环境搭建
+			a) jar包
+			b) 配置文件
+				mybatis核心配置文件   1：配置数据源  2：加载映射文件
+				映射文件    sql语句
+				日志文件
+		需求：
+			a) 通过id修改一个用户
+			b) 通过用户名模糊查询一个用户列表
+			c) 增加一个用户
+				获取最后一个增加的id
+					select last_insert_id()：必须与insert语句在同一个事务里运行，才能取到最后一个增加的id
+					keyColumn: 指定表中主键列的名称
+					keyPropertye: 指定pojo类型中主键属性的名称
+					resultType: 指定返回结果集的类型
+					order: 如果选择before，在insert之前运行，如果选择after在insert之后运行
+			d) 通过用户id修改一个用户
+				
+			e) 通过用户id删除一个用户
+				
+		知识总结：
+			parameterType: 指定参数的类型
+				基础类型（string，long，double，int。。。）
+					#{}和${}的总数量是一个的时候，使用基础类型
+				pojo类型
+					#{}和${}的总数量是大于一个的时候，使用pojo类型
+				
+			resultType: 指定返回结果集的类型
+				pojo类型
+				List集合类型：如果返回类型是集合类型，那么指定集合泛型中的类型
+				
+			#{}占位符：跟jdbc的？一样，启到占位的作用
+				如果parameterType是基础类型（string，long，double，int。。。），那么#{}里面的变量可以任意取名
+				如果parameterType是pojo类型，那么#{}里面的变量必须是属性
+				
+			${}拼接符：启到sql原样拼接的作用
+				如果parameterType是基础类型（string，long，double，int。。。），那么${}里面的变量必须是value
+				如果parameterType是pojo类型，那么#{}里面的变量必须是属性
+			
+		mybatis和hibernate的区别
+			1.mybatis学习简单，容易上手
+			2.mybatis代码量较多
+			
+	3：mybatis架构
+		
+	4：mybatis的dao开发
+		a）原始dao开发方式
+			特点：需要编写接口和实现类
+			需求：
+				a) 通过id查询一个用户
+				b) 增加一个用户
+		b) 动态代理dao开发方式（重点）
+			特点：只需要编写接口，实现类由mybatis根据接口和映射文件自动生成
+			
+			规则1：引入映射文件的规则
+				使用mapper标签的class属性引入映射文件
+					1：要求接口文件和映射文件必须在同一个包下
+					2：接口文件和映射文件名称必须相同，除了扩展名
+			规则2：动态代理dao开发的规范
+				1：要求映射文件的namespace必须等于接口的全路径名称
+				2：映射文件的sql唯一标示必须等于接口的方法名称
+				3：映射文件的parameterType必须要等于方法的参数类型
+				4：映射文件的resultType必须要等于方法的返回类型
+				
+			动态代理dao开发方式，selectOne和selectList调用时机
+				根据接口方法的返回类型，如果返回的是list类型，那么调用selectList
+					如果返回的是单个对象，调用selectOne
+
+	5：mybatis核心配置文件标签
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	

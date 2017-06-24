@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls modeName="用户" xmlns="http://www.springmvcplus.com/schema/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.springmvcplus.com/schema/sql sql.xsd">
+	<sql id="lastId">
+		SELECT LAST_INSERT_ID()
+	</sql>
+	<!-- 拜访类别 -->
+	<sql id="VisitProject">
+		select * from visitproject order by orderby
+	</sql>
+	<!-- 客户保险观念 -->
+	<sql id="customhope">
+		select * from customhope order by orderby
+	</sql>
+	<!-- 客户类型 -->
+	<sql id="customtype">
+		select * from customtype order by orderby
+	</sql>
+	<!-- 客户排序搜索列表 -->
+	<sql id="ordercustom">
+		select * from ordercustom order by orderby
+	</sql>
+	<!-- 通过外键id查询图片列表 -->
+	<sql id="imgs">
+		select id,imgurl from imgs where foreignKey = #{id} order by id
+	</sql>
+	<!-- 查询星座 -->
+	<sql id="xingzuo">
+		select * from xingzuo
+	</sql>
+	<!-- 查询星座销售推荐 -->
+	<sql id="xingzuoSale">
+		select a.xingzuo,b.* from xingzuo a,xingzuo_sale b where a.id = b.xingzuoId 
+		<if if="xingzuoId != null">
+			and xingzuoid=#{xingzuoId}
+		</if>
+	</sql>
+</sqls>

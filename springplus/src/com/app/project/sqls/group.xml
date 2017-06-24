@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls modeName="用户" xmlns="http://www.springmvcplus.com/schema/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.springmvcplus.com/schema/sql sql.xsd">
+	<!-- 查询最新公告 -->
+	<sql id="findNewGroupNotice">
+		select * from GroupNotice where groupId=#{groupId} order by id desc limit 0,1
+	</sql>
+	<!-- 查询所有公告 -->
+	<sql id="findGroupNotice">
+		select * from GroupNotice 
+		<where>
+			<if if="groupId != null">
+				 groupId=#{groupId} 
+			</if>
+			<if if="id != null">
+				and id = #{id}
+			</if>
+		</where>
+		 order by id desc
+	</sql>
+	<!-- 通过团队id查询团队信息 -->
+	<sql id="selectGroupAllUser">
+		select u.id as userid,u.imgUrl,u.groupId,u.tel,u.name as username,u.groupAuth,g.groupName,g.createTime 
+		from user u,group_ g where u.groupId=g.id and g.id=#{groupId} order by u.groupAuth
+	</sql>
+	<!-- 查询团队基本信息 -->
+	<sql id="selectGroupInfo">
+		select * from group_ where id=#{groupId}
+	</sql>
+	<!-- 通过组id查询所有日志 -->
+	<sql id="groupJournalAll">
+		select a.*,b.name as userName,b.imgUrl as userImgUrl from GroupJournal a join user b on a.userid=b.id where a.groupId=#{groupId}
+		<if if="journalId != null">
+			and a.id = #{journalId}
+		</if>
+		 order by a.id desc
+	</sql>
+	<!-- 通过日志id查询点赞 -->
+	<sql id="GroupJournalFabulous">
+		select a.*,b.name as userName,b.imgUrl as userImgUrl from GroupJournalComment a join user b on a.userid=b.id where journalId = #{journalId} and context='_Fabulous_' order by a.id
+	</sql>
+	<!-- 通过日志id查询评论 -->
+	<sql id="GroupJournalComment">
+		select a.*,b.name as userName,b.imgUrl as userImgUrl from GroupJournalComment a join user b on a.userid=b.id where journalId = #{journalId} and context <> '_Fabulous_' order by a.id
+	</sql>
+	<!-- 通过团队id查询团队行程 -->
+	<sql id="GroupTrip">
+		select * from GroupTrip where groupId=#{groupId} order by id
+	</sql>
+	<!-- 获取测试结果记录 -->
+	<sql id="selectTestLogs">
+		select a.testTime,a.testedName,a.score,b.name as testerName from test_resultlog a,user b where a.testerUserId = b.id 
+		<if if="testedName != null">
+			and a.testedName like '%${testedName}%'
+		</if>
+		<if if="testerName != null">
+			and b.name like '%${testerName}%'
+		</if>
+		order by a.id desc
+	</sql>
+	<!-- 日历查询群组 日程 -->
+	<sql id="selectGroupTripByDate">
+		select * from grouptrip where groupId = #{groupId} and case when startDate is null or startDate ='' then endDate=#{date} else #{date} between startDate and endDate end
+	</sql>
+	<!-- 日历查询群组 查询一天的，需要带上具体的用户名称 -->
+	<sql id="selectGroupTripByOneDate">
+		select * from grouptrip where groupId = #{groupId} and case when startDate is null or startDate ='' then endDate=#{date} else #{date} between startDate and endDate end
+	</sql>
+</sqls>
