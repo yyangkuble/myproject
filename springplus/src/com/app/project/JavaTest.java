@@ -192,4 +192,20 @@ public class JavaTest {
 		String body = TestUtil.aesTest("base/selectUserTripByDate", map);
 		System.out.println(body);
 	}
+	
+	@Test
+	public void ranking() throws Exception {
+		Map<String, String> map=new HashMap<>();
+		map.put("userId", "201706061110592710");
+		map.put("yejiDate", "2017-06");
+		String body = TestUtil.aesTest("me/ranking", map);
+		System.out.println(body);
+	}
+	@Test
+	public void updateSelectUseryeji() throws Exception {
+		Map<String, String> map=new HashMap<>();
+		map.put("userId", "201706061110592710");
+		String body = TestUtil.aesTest("me/updateYeji", map);
+		System.out.println(body);
+	}
 }

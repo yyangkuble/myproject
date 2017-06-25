@@ -37,9 +37,22 @@ public class SelectIntecept {
 	 * @param t
 	 * @return
 	 */
-	public void selectEnd(String sqlId,Result result) {
+	public void selectEnd(String sqlId,Map<String, String> parameter,Result result) {
 		Object listOrMap=result.getData();
 		List<Map<String, Object>> listResult;
+		Map<String, Object> mapResult;
+		
+		//查询用户业绩
+		if (sqlId.equals("selectUserYejiByMonth")) {
+			if (listOrMap != null) {
+				mapResult=(Map<String, Object>) listOrMap;
+				mapResult.put("visitCount", baseDao.getSingleResultBySqlId("selectVisitCount", parameter));
+			}else {
+				mapResult=new HashMap<>();
+				mapResult.put("visitCount", baseDao.getSingleResultBySqlId("selectVisitCount", parameter));
+			}
+		}
+		
 		if (sqlId.equals("groupJournalAll")) {
 			listResult=(List<Map<String, Object>>) listOrMap;
 			for (Map<String, Object> resultmap : listResult) {

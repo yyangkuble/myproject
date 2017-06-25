@@ -49,11 +49,49 @@ public class User {
 	@Transient
 	@ApiDesc("1： 同意用户加入群组，2：剔除群组，3：提升权限，4：降级权限")
 	Integer type;
-	@ApiDesc("业绩")
-	Double yeji;
-	@ApiDesc("件数")
-	Integer policyNumber;
+	@ApiDesc("公司名称")
+	String company;
+	@ApiDesc("职位")
+	String job;
+	@ApiDesc("日程提醒    选项为：不提醒，15分钟前，半小时前，1小时前，2小时前，3小时前，24小时前  ，默认为半小时")
+	String tripWarn;
+	@ApiDesc("客户自动升级提醒，0：不是  1：是，默认为1")
+	Integer customWarn;
+	@ApiDesc("是否在WiFi下看视频  0：不是，1：是，，默认为1")
+	Integer wifiVideo;
 	
+	
+	
+	public String getCompany() {
+		return company;
+	}
+	public void setCompany(String company) {
+		this.company = company;
+	}
+	public String getJob() {
+		return job;
+	}
+	public void setJob(String job) {
+		this.job = job;
+	}
+	public String getTripWarn() {
+		return tripWarn;
+	}
+	public void setTripWarn(String tripWarn) {
+		this.tripWarn = tripWarn;
+	}
+	public Integer getCustomWarn() {
+		return customWarn;
+	}
+	public void setCustomWarn(Integer customWarn) {
+		this.customWarn = customWarn;
+	}
+	public Integer getWifiVideo() {
+		return wifiVideo;
+	}
+	public void setWifiVideo(Integer wifiVideo) {
+		this.wifiVideo = wifiVideo;
+	}
 	public Integer getType() {
 		return type;
 	}

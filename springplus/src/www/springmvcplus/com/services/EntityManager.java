@@ -267,19 +267,20 @@ public class EntityManager {
 		for (Map<String, Object> map : list) {
 			try {
 				T t = class1.newInstance();
-				for (String attrName : thiscolumnMap.keySet()) {
-					Field field = class1.getDeclaredField(attrName);
+				Field[] fields = class1.getDeclaredFields();
+				for (Field field : fields) {
 					field.setAccessible(true);
-					field.set(t, SqlUtil.caseType(field.getType(),map.get(thiscolumnMap.get(attrName))));
+					String columName=thiscolumnMap.get(field.getName());
+					if (columName==null) {
+						columName=field.getName();
+					}
+					field.set(t, SqlUtil.caseType(field.getType(),map.get(columName)));
 				}
 				list2.add(t);
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchFieldException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SecurityException e) {

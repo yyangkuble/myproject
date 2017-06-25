@@ -100,6 +100,9 @@ public class UserAction {
 				result.setErrorCode(1);
 				result.setErrorMessage("电话重复，添加失败");
 			}else {
+				user.setTripWarn("半小时前");
+				user.setCustomWarn(1);
+				user.setWifiVideo(1);
 				int res=myService.save(user);
 				if (res==0) {
 					result.setErrorCode(1);//未保存成功
@@ -182,16 +185,17 @@ public class UserAction {
 	public void findGroupUsersYeji(HttpServletRequest request ,HttpServletResponse response) {
 		Map<String, String> parameter = AESUtil.converParameter(request);
 		Result result = new Result();
-		String sql="select id,imgUrl,name,yeji,policyNumber from user where groupid = "+parameter.get("groupId")+" order by yeji desc";
+		String sql="select id,imgUrl,name from user where groupid = "+parameter.get("groupId")+" order by yeji desc";
 		List<Map<String, Object>> listMaps = myService.getListMaps(sql);
 		
 		for (Map<String, Object> user : listMaps) {
 			List<Map<String, Object>> list = myService.getListMaps("select concat(count(id),level) as customlevelnumber from (select distinct b.id,b.level from usertrip a join custom b on a.visitCustomId = b.id where a.userid ='"+user.get("id")+"' and a.visitDate between '"+parameter.get("startDate")+"' and '"+parameter.get("endDate")+"') aa group by level ");
-			String yeji="";
+			String customlevelnumber="";
 			for (Map<String, Object> map : list) {
-				yeji+=map.get("customlevelnumber");
+				customlevelnumber+=map.get("customlevelnumber");
 			}
-			user.put("customlevelnumber", yeji);
+			user.put("customlevelnumber", customlevelnumber);
+			
 		}
 		result.setData(listMaps);
 		ResponseUtil.print(response, result);

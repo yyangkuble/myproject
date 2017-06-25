@@ -65,7 +65,7 @@ public class AESSystemAction {
 		Result result = new Result();
 		selectIntecept.selectBefore(sqlId, mapParamerts,result);
 		myService.selectList(sqlId, mapParamerts,result);
-		selectIntecept.selectEnd(sqlId, result);
+		selectIntecept.selectEnd(sqlId, mapParamerts, result);
 		ResponseUtil.print(response, result);
 	}
 	@RequestMapping("/selectOne/{sqlId}")
@@ -75,7 +75,7 @@ public class AESSystemAction {
 		Result result = new Result();
 		selectIntecept.selectBefore(sqlId, mapParamerts,result);
 		myService.selectOne(sqlId, mapParamerts,result);
-		selectIntecept.selectEnd(sqlId, result);
+		selectIntecept.selectEnd(sqlId, mapParamerts, result);
 		ResponseUtil.print(response, result);
 	}
 	@RequestMapping(method=RequestMethod.POST,value="/save/{entityName}")
