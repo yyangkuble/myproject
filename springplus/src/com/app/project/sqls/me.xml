@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls modeName="我的" xmlns="http://www.springmvcplus.com/schema/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.springmvcplus.com/schema/sql sql.xsd">
+	
+	<sql id="customcount" des="查询客户数量">
+		(select b.level,count(b.id) as customCount from user a join custom b on a.id=b.userId where a.id=#{userId} group by level order by b.level)
+UNION ALL
+(select 'all' as level,count(b.id) as customCount from user a join custom b on a.id=b.userId where a.id=#{userId})
+	</sql>
+	
+	<sql id="selectUserYejiByMonth" des="根据月份查询业绩">
+		select * from userYeji where yejiDate=#{yejiDate} and userId=#{userId}
+	</sql>
+	<sql id="selectVisitCount" des="查询访量">
+		select count(*) as visitCount from usertrip where userId=#{userId} and left(visitDate,7) = #{yejiDate}
+	</sql>
+	
+	<sql id="chat1">
+		select aa.yejiDate,cast(right(aa.yejiDate,2) as SIGNED INTEGER) as x,salary/visitcount as y from 
+		(select yejiDate,salary from useryeji where userid= #{userId} and yejiDate between concat(left(now(),5),'01') and left(now(),7) order by yejiDate) aa ,
+		(select left(visitDate,7) as visitmonth,count(*) as visitcount from usertrip where userId=#{userId} and left(visitDate,7) between concat(left(now(),5),'01') and left(now(),7) group by visitmonth order by visitmonth) bb
+		where aa.yejiDate = bb.visitmonth
+	</sql>
+	<sql id="chat2">
+		select yejiDate,cast(right(yejiDate,2) as SIGNED INTEGER) as x,salary as y from useryeji where userid= #{userId} and yejiDate between concat(left(now(),5),'01') and left(now(),7) order by yejiDate
+	</sql>
+	
+	<!-- 排名 -->
+	<!-- 访量排名 -->
+	<sql id="visitCountRanking">
+		SELECT @rownum:=@rownum+1 rownum,aa.userId,aa.visitmonth,aa.visitcount From(
+		select @rownum:=0,userid,left(visitDate,7) as visitmonth,count(*) as visitcount from usertrip where left(visitDate,7) = #{yejiDate}  group by userId order by visitcount desc
+		) aa
+		<if if="userId != null">
+			where userId = #{userId}
+		</if>
+	</sql>
+	<sql id="visitCountRankingCount">
+		select count(*) from(
+		select userid,count(*) as visitcount from usertrip where left(visitDate,7) = #{yejiDate}  group by userId 
+		) aa
+	</sql>
+	<!-- 件数 -->
+	<sql id="policyNumberRanking">
+		SELECT @rownum:=@rownum+1 rownum,aa.userId,aa.policyNumber From(
+		select @rownum:=0,userId,policyNumber from useryeji where yejidate=#{yejiDate} order by policyNumber desc
+		) aa
+		<if if="userId != null">
+			where userId = #{userId}
+		</if>
+	</sql>
+	<sql id="policyNumberAndPremiumRankingCount">
+		select count(*) from useryeji where yejidate=#{yejiDate} 
+	</sql>
+	<!-- 保费 -->
+	<sql id="premiumRanking">
+		SELECT @rownum:=@rownum+1 rownum,aa.userId,aa.premium From(
+		select @rownum:=0,userId,premium from useryeji where yejidate=#{yejiDate} order by policyNumber desc
+		) aa
+		<if if="userId != null">
+			where userId = #{userId}
+		</if>
+	</sql>
+	
+	<!-- 访量排名 -->
+	<sql id="visitCountRankingTop">
+		SELECT @rownum:=@rownum+1 ranking,aa.userId,aa.visitmonth,aa.visitcount,bb.name,bb.company From(
+		select @rownum:=0,userid,left(visitDate,7) as visitmonth,count(*) as visitcount from usertrip where left(visitDate,7) = left(now(),7)  group by userId order by visitcount desc
+		) aa,user bb where aa.userId = bb.id limit 0,30
+	</sql>
+	
+	<sql id="updateSelectUseryeji">
+		select *,cast(right(yejiDate,2) as SIGNED INTEGER) as yejimonth from useryeji where userId = #{userId} and left(yejiDate,4)=left(now(),4) order by yejiDate desc
+	</sql>
+	
+</sqls>
