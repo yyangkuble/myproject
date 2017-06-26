@@ -208,4 +208,11 @@ public class JavaTest {
 		String body = TestUtil.aesTest("me/updateYeji", map);
 		System.out.println(body);
 	}
+	@Test
+	public void ordercustom() throws Exception {
+		Map<String, String> map=new HashMap<>();
+		map.put("userId", "201706061110592710");
+		String body = TestUtil.aesTest("base/searchCustomBaseData", map);
+		System.out.println(body);
+	}
 }

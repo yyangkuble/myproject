@@ -78,5 +78,22 @@ public class GroupAction {
 		}
 		ResponseUtil.print(response, result);
 	}
-	
+	@RequestMapping("/groupRemoveUser")
+	public void groupRemoveUser(HttpServletRequest request,HttpServletResponse response) {
+		Map<String, String> parameter = AESUtil.converParameter(request);
+		String userId=parameter.get("userId");
+		int update = myService.update("update user set groupAuth=null,groupId=null where id= '"+userId+"'");
+		
+		Result result = new Result();
+		if (update != 1) {
+			result.setErrorCode(1);
+			result.setErrorMessage("系统发生错误");
+		}else {
+			Map<String, Object> map = myService.getMap("select * from user where id = '"+userId+"'");
+			map.remove("password");
+			result.setData(map);
+		}
+		
+		ResponseUtil.print(response, result);
+	}
 }

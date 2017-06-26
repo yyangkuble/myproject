@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.alibaba.druid.sql.visitor.functions.If;
 import com.alibaba.fastjson.JSON;
 import com.app.project.mode.TestResultLog;
 import com.app.project.mode.TestResultLogOther;
@@ -52,6 +55,202 @@ public class BaseAction {
 	public void customtype(HttpServletRequest request,HttpServletResponse response) {
 		List<Map<String, Object>> list = myService.getListMapsBySqlId("customtype");
 		ResponseUtil.print(response, new Result(list));
+	}
+	@RequestMapping("/searchCustomBaseData")
+	public void searchcustom(HttpServletRequest request,HttpServletResponse response) {
+		Map<String, String> parameter = AESUtil.converParameter(request);
+		String userId = parameter.get("userId");
+		List<Map<String, Object>> list = new ArrayList<>();
+		Map<String, Object> map1=new HashMap<>();
+		map1.put("displayName", "类别");
+		list.add(map1);
+		map1=new HashMap<>();
+		map1.put("displayName", "客户等级");
+		list.add(map1);
+		map1=new HashMap<>();
+		map1.put("displayName", "关系");
+		list.add(map1);
+		map1=new HashMap<>();
+		map1.put("displayName", "生日");
+		list.add(map1);
+		map1=new HashMap<>();
+		map1.put("displayName", "车险");
+		list.add(map1);
+		map1=new HashMap<>();
+		map1.put("displayName", "年龄");
+		list.add(map1);
+		map1=new HashMap<>();
+		map1.put("displayName", "年缴保费");
+		list.add(map1);
+		map1=new HashMap<>();
+		map1.put("displayName", "性别");
+		list.add(map1);
+		map1=new HashMap<>();
+		map1.put("displayName", "保险观念");
+		list.add(map1);
+			for (Map<String, Object> map : list) {
+				if (map.get("displayName").equals("关系")) {
+					List<Map<String, Object>> kjkd = myService.getListMaps("select distinct relationship from custom where userId = '"+userId+"'");
+					Set<String> set=new HashSet<>();
+					set.add("亲友");
+					set.add("转介绍");
+					set.add("陌生开发");
+					for (Map<String, Object> map2 : kjkd) {
+						if (StringUtil.hashText(map2.get("relationship"))) {
+							set.add(map2.get("relationship").toString());
+						}
+					}
+					List<Map<String, Object>> list2=new ArrayList<>();
+					Map<String, Object> map2=null;
+					for (String string : set) {
+						map2=new HashMap<String, Object>();
+						map2.put("code", string);
+						map2.put("displayName", string);
+						list2.add(map2);
+					}
+					map.put("select2", list2);
+					map.put("parameterName", "relationship");
+				}
+				if (map.get("displayName").equals("保险观念")) {
+					List<Map<String, Object>> list2=new ArrayList<>();
+					Map<String, Object> map2=new HashMap<String, Object>();
+					map2.put("code", "医疗型");
+					map2.put("displayName", "医疗型");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "理财型");
+					map2.put("displayName", "理财型");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "综合型");
+					map2.put("displayName", "综合型");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "无观念");
+					map2.put("displayName", "无观念");
+					list2.add(map2);
+					map.put("select2", list2);
+					map.put("parameterName", "hope");
+				}
+				if (map.get("displayName").equals("车险")) {
+					List<Map<String, Object>> list2=new ArrayList<>();
+					Map<String, Object> map2=new HashMap<String, Object>();
+					map2.put("code", "有");
+					map2.put("displayName", "有");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "无");
+					map2.put("displayName", "无");
+					list2.add(map2);
+					map.put("select2", list2);
+					map.put("parameterName", "car");
+				}
+				if (map.get("displayName").equals("性别")) {
+					List<Map<String, Object>> list2=new ArrayList<>();
+					Map<String, Object> map2=new HashMap<String, Object>();
+					map2.put("code", "男");
+					map2.put("displayName", "男");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "女");
+					map2.put("displayName", "女");
+					list2.add(map2);
+					map.put("select2", list2);
+					map.put("parameterName", "sex");
+				}
+				
+				if (map.get("displayName").equals("类别")) {
+					List<Map<String, Object>> list2=new ArrayList<>();
+					Map<String, Object> map2=new HashMap<String, Object>();
+					map2.put("code", "营销");
+					map2.put("displayName", "营销");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "增员");
+					map2.put("displayName", "增员");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "全部");
+					map2.put("displayName", "全部");
+					list2.add(map2);
+					map.put("select2", list2);
+					map.put("parameterName", "customType");
+				}
+				
+				if (map.get("displayName").equals("客户等级")) {
+					List<Map<String, Object>> list2=new ArrayList<>();
+					Map<String, Object> map2=new HashMap<String, Object>();
+					map2.put("code", "A");
+					map2.put("displayName", "A");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "B");
+					map2.put("displayName", "B");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "C");
+					map2.put("displayName", "C");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "D");
+					map2.put("displayName", "D");
+					list2.add(map2);
+					map.put("select2", list2);
+					map.put("parameterName", "level");
+				}
+				
+				if (map.get("displayName").equals("生日")) {
+					List<Map<String, Object>> list2=new ArrayList<>();
+					Map<String, Object> map2=null;
+					for (int i = 1; i <= 12; i++) {
+						map2=new HashMap<String, Object>();
+						map2.put("displayName", i+"月");
+						map2.put("code", i);
+						list2.add(map2);
+					}
+					map.put("select2", list2);
+					map.put("parameterName", "birthDay");
+				}
+				if (map.get("displayName").equals("年龄")) {
+					List<Map<String, Object>> list2=new ArrayList<>();
+					Map<String, Object> map2=null;
+					for (int i = 18; i <= 65; i++) {
+						map2=new HashMap<String, Object>();
+						map2.put("displayName", i+"岁");
+						map2.put("code", i);
+						list2.add(map2);
+					}
+					map.put("select2", list2);
+					map.put("parameterName1", "ageStart");
+					map.put("parameterName2", "ageEnd");
+				}
+				if (map.get("displayName").equals("年缴保费")) {
+					List<Map<String, Object>> list2=new ArrayList<>();
+					Map<String, Object> map2=new HashMap<String, Object>();
+					map2.put("code", "0-1");
+					map2.put("displayName", "0~1万");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "1-5");
+					map2.put("displayName", "1~5万");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "5-10");
+					map2.put("displayName", "5~10万");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "10-20");
+					map2.put("displayName", "10~20万");
+					list2.add(map2);
+					map2=new HashMap<String, Object>();
+					map2.put("code", "20-100000");
+					map2.put("displayName", "20万以上");
+					list2.add(map2);
+					map.put("select2", list2);
+					map.put("parameterName", "whim");
+				}
+			}
+			ResponseUtil.print(response, new Result(list));
 	}
 	@RequestMapping("/ordercustom")
 	public void ordercustom(HttpServletRequest request,HttpServletResponse response) {

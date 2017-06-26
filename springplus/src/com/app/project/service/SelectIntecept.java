@@ -29,6 +29,13 @@ public class SelectIntecept {
 	 * @param t
 	 */
 	public void selectBefore(String sqlId,Map<String, String> parameter,Result result) {
+		if (sqlId.equals("selectCoustom")) {
+			String whim = parameter.get("whim");
+			if (StringUtil.hashText(whim)) {
+				parameter.put("whimStart", StringUtil.valueOf(Integer.valueOf(whim.split("-")[0])*10000));
+				parameter.put("whimEnd", StringUtil.valueOf(Integer.valueOf(whim.split("-")[1])*10000));
+			}
+		}
 	}
 	/**
 	 * 有可能是map，有可能是listmap
