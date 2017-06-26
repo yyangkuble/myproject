@@ -25,6 +25,8 @@
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/gexin-rp-sdk-base-4.0.0.14.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/gexin-rp-sdk-template-4.0.0.8.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/gexin-rp-sdk-http-4.0.1.9.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/quartz-2.2.3.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/quartz-jobs-2.2.3.jar"/>
 	<classpathentry kind="con" path="com.genuitec.runtime.library/com.genuitec.jstl_1.2.2">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="WEB-INF/lib"/>
