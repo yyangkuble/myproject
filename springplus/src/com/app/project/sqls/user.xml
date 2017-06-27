@@ -4,15 +4,15 @@
 		select count(*) as telCount from user where tel = #{tel}
 	</sql>
 	<sql id="selectUserByTel">
-		select id,imgUrl,groupId,address,tel,name,rongCloudToken,groupAuth from user where tel = #{tel}
+		select * from user where tel = #{tel}
 	</sql>
 	<!-- 验证登录 -->
 	<sql id="login">
-		select id,imgUrl,groupId,address,tel,name,rongCloudToken,groupAuth from user where tel = #{tel} and password=#{password}
+		select * from user where tel = #{tel} and password=#{password}
 	</sql>
 	<!-- 通过电话查询用户id -->
 	<sql id="findUserById">
-		select id,imgUrl,groupId,address,tel,name,rongCloudToken,groupAuth from user where id=#{id}
+		select a.*,b.groupName,b.rongCloudGroupId from user a join group_ b on a.groupid=b.id where a.id=#{id}
 	</sql>
 	<sql id="findUserByIdMessageUsed">
 		select name,imgUrl from user where id=#{id}

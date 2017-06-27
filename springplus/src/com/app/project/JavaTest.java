@@ -204,14 +204,14 @@ public class JavaTest {
 	@Test
 	public void updateSelectUseryeji() throws Exception {
 		Map<String, String> map=new HashMap<>();
-		map.put("userId", "201706061110592710");
-		String body = TestUtil.aesTest("me/updateYeji", map);
+		map.put("id", "201706061110592710");
+		String body = TestUtil.aesTest("selectOne/findUserById", map);
 		System.out.println(body);
 	}
 	@Test
 	public void ordercustom() throws Exception {
 		Map<String, String> map=new HashMap<>();
-		map.put("userId", "201706061110592710");
+		map.put("id", "201706061110592710");
 		String body = TestUtil.aesTest("base/searchCustomBaseData", map);
 		System.out.println(body);
 	}

@@ -155,20 +155,20 @@ public class UserAction {
 	@RequestMapping("/getRongCloudToken")
 	public void getRongCloudToken(HttpServletRequest request,HttpServletResponse response) {
 		Map<String, String> parameter = AESUtil.converParameter(request);
-		User user=myService.getModelBySqlId("findUserById",parameter, User.class);
+		Map<String, Object> map = myService.getMapBySqlId("findUserById",parameter);
 		if (parameter.get("isRefresh").equals("yes")) {
-			TokenResult rongyunToken = PublicUtil.getRongyunToken(user.getId(), user.getName(), user.getImgUrl());
+			TokenResult rongyunToken = PublicUtil.getRongyunToken(map.get("id").toString(), map.get("name").toString(),StringUtil.valueOf(map.get("imgUrl")));
 			if (rongyunToken.getCode()==200) {
 				parameter.put("token",rongyunToken.getToken() );
 				User updateUser=new User();
-				updateUser.setId(user.getId());
+				updateUser.setId(map.get("id").toString());
 				updateUser.setRongCloudToken(rongyunToken.getToken());
 				myService.update(updateUser);
 			}else {
 				parameter.put("token","获取token失败");
 			}
 		}else {
-			parameter.put("token", user.getRongCloudToken());
+			parameter.put("token", map.get("rongCloudToken").toString());
 		}
 		ResponseUtil.print(response, parameter);
 	}

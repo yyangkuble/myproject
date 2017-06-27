@@ -12,13 +12,13 @@
 		通过客户id客户家庭查询
 	 -->
 	<sql id="FamilySearch">
-		select * from family where customId=#{customId}
+		select * from CustomFamily where customId=#{customId}
 	</sql>
 	<!-- 
 		通过客户id通过id客户家庭查询
 	 -->
 	<sql id="FamilySearchById">
-		select * from family where id=#{id}
+		select * from CustomFamily where id=#{id}
 	</sql>
 	<!-- 通过客户id纪念日查询 -->
 	<sql id="CustomImportanceDaySearch">
