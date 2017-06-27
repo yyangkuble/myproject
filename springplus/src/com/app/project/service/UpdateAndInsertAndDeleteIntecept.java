@@ -13,11 +13,14 @@ import org.springframework.stereotype.Service;
 import www.springmvcplus.com.dao.BaseDao;
 import www.springmvcplus.com.services.service.MyService;
 import www.springmvcplus.com.util.DateUtil;
+import www.springmvcplus.com.util.IdManage;
+import www.springmvcplus.com.util.JobManager;
 import www.springmvcplus.com.util.MyJSON;
 import www.springmvcplus.com.util.StringUtil;
 import www.springmvcplus.com.util.system.SqlUtil;
 
 import com.alibaba.fastjson.JSON;
+import com.app.project.jobs.UserTripJobs;
 import com.app.project.mode.Custom;
 import com.app.project.mode.Group;
 import com.app.project.mode.GroupJournal;
@@ -175,14 +178,25 @@ public class UpdateAndInsertAndDeleteIntecept {
 		}
 		
 		if (entity instanceof UserTrip) {
-			UserTrip userTrip = (UserTrip) entity;
+			UserTrip userTrip = (UserTrip) result.getData();
 			Map<String, Object> map = baseDao.getMap("select b.name as customName,b.level as customLevel,UNIX_TIMESTAMP()-cast(UNIX_TIMESTAMP(a.visitTime) as SIGNED INTEGER) as triptimeout from usertrip a join custom b on a.visitCustomId = b.id where a.id = '"+userTrip.getId()+"'");
 			userTrip.setVisitCustomName(map.get("customName").toString());
 			userTrip.setVisitCustomLevel(map.get("customLevel").toString());
 			userTrip.setTriptimeout(map.get("triptimeout").toString());
+			if (handleType==HandleType.save) {
+				//添加提醒任务
+				if (StringUtil.hashText(userTrip.getVisitTime()) && userTrip.getIsWarn()==1) {
+					
+				}
+			}
+			if (handleType==HandleType.update) {
+				if (StringUtil.hashText(userTrip.getVisitTime())) {
+					
+				}
+			}
 		}
 		if (entity instanceof GroupTrip) {
-			GroupTrip groupTrip = (GroupTrip) entity;
+			GroupTrip groupTrip = (GroupTrip) result.getData();
 			Object ids=groupTrip.getTripUsers();
 			if (StringUtil.hashText(ids)) {
 				List<Map<String, Object>> listMap = baseDao.getListMaps("select id,name,tel,imgurl from user where id "+SqlUtil.inSqlStr(ids.toString()));

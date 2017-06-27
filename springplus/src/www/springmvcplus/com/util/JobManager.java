@@ -23,10 +23,10 @@ import org.quartz.impl.StdSchedulerFactory;
 import www.springmvcplus.com.services.service.MyService;
 
 import com.alibaba.fastjson.JSON;
-import com.app.project.jobs.TestJobs;
+import com.app.project.jobs.UserTripJobs;
 
 
-public class TaskManager {
+public class JobManager {
 	private static SchedulerFactory jobFactory = new StdSchedulerFactory(); 
 	
 	/**
@@ -119,7 +119,7 @@ public class TaskManager {
 	public static void main(String[] args) {
 		Map<String, Object> map=new HashMap<String, Object>();
 		map.put("sb", "meinv");
-		addJob("ceshijob", TestJobs.class, DateUtil.dateMath(new Date(), DateUtil.Second, 10),map);
+		addJob("ceshijob", UserTripJobs.class, DateUtil.dateMath(new Date(), DateUtil.Second, 10),map);
 		//removeJob("ceshijob");
 		updateJobTime("ceshijob",DateUtil.dateMath(new Date(), DateUtil.Second, 120));
 	}

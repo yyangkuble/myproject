@@ -7,7 +7,7 @@ import org.quartz.JobExecutionException;
 
 import com.alibaba.fastjson.JSON;
 
-public class TestJobs implements Job {
+public class UserTripJobs implements Job {
 
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {

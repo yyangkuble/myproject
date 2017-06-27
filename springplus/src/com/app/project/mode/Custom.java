@@ -3,6 +3,7 @@ package com.app.project.mode;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import www.springmvcplus.com.common.ApiDesc;
 import www.springmvcplus.com.common.Generated;
@@ -53,6 +54,8 @@ public class Custom {
 	String yearIncome;
 	@ApiDesc("保费")
 	Long  whim;
+	@Transient
+	String whimStr;
 	@ApiDesc("车子")
 	String car;
 	@ApiDesc("保险到期日期")
@@ -74,6 +77,15 @@ public class Custom {
 	String imgUrls;
 	@ApiDesc("这个字段用来，判断是否是首次添加  0：第一次增加，1：已更新过，服务器自动维护，不需要前台传入")
 	Integer addState;
+	
+	
+	public String getWhimStr() {
+		return whimStr;
+	}
+
+	public void setWhimStr(String whimStr) {
+		this.whimStr = whimStr;
+	}
 
 	public Integer getAddState() {
 		return addState;
