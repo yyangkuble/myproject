@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	
+	
+	<!-- 注解扫描: @component @service @controller -->
+	<context:component-scan base-package="cn.itcast.action"/>
+	
+	<!-- 手动配置 映射器和适配器,可以提高springmvc的性能,应为不手动配置映射器和适配器,springmvc每次请求都会找我们是否配置了映射器和适配器,会降低请求性能 -->
+	<!-- 老版本 -->
+	<!-- <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"></bean>
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"></bean> -->
+	<!-- 新版本 -->
+	<!-- <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"></bean>
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"></bean>
+	 -->
+	 <!-- 
+	 	注解驱动作用: 相当于配置了最新的映射器和适配器
+	 	conversion-service: 配置转换器服务bean
+	  -->
+	 <mvc:annotation-driven conversion-service="conversionService"/>
+	 
+	 <!-- 转换器配置 -->
+	<bean id="conversionService"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<bean class="cn.itcast.action.converter.CustomConverterStringToDate"/>
+			</set>
+		</property>
+	</bean>
+	 
+	 
+	<!-- spring mvc jsp的视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView"/>
+		<!-- 
+			prefix: 前缀
+			suffix: 后缀
+		 -->
+		<property name="prefix" value="/WEB-INF/jsps/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<!-- 全局异常处理 -->
+	<bean class="cn.itcast.exception.CustomGlobalExceptionResolver"></bean>
+	<!-- 文件上传 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置上传文件的最大尺寸为5MB -->
+		<property name="maxUploadSize">
+			<value>5242880</value>
+		</property>
+	</bean>
+	
+</beans>
