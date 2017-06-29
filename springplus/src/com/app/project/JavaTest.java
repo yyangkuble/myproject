@@ -224,4 +224,13 @@ public class JavaTest {
 		String body = TestUtil.aesTest("user/findGroupUsersYeji", map);
 		System.out.println(body);
 	}
+	@Test
+	public void personnelPool() throws Exception {
+		Map<String, String> map=new HashMap<>();
+		map.put("groupId", "10022");
+		map.put("startDate", "2017-06-01");
+		map.put("endDate", "2017-06-31");
+		String body = TestUtil.aesTest("base/personnelPool", map);
+		System.out.println(body);
+	}
 }

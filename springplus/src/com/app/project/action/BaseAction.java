@@ -281,12 +281,13 @@ public class BaseAction {
 		List<RenCaiPool> renCaiPools=new ArrayList<>();
 		List<Map<String, Object>> listmap = myService.getListMapsBySqlId("personnelPool", map);
 		String customId="";
-		for (Map<String, Object> map2 : listmap) {
+		RenCaiPool renCaiPool=null;
+		for (int index=0;index<listmap.size();index++) {
+			Map<String, Object> map2 = listmap.get(index);
 			String visitCustomId=StringUtil.valueOf(map2.get("visitCustomId"));
 			String visitProject=StringUtil.valueOf(map2.get("visitProject"));
 			String visitTime=StringUtil.valueOf(map2.get("visitTime"));
 			String customname=StringUtil.valueOf(map2.get("customname"));
-			RenCaiPool renCaiPool=null;
 			if (!visitCustomId.equals(customId)) {
 				if (renCaiPool != null) {
 					renCaiPools.add(renCaiPool);
@@ -306,6 +307,11 @@ public class BaseAction {
 				renCaiPool.setTime5(visitTime);
 			}else if (visitProject.equals("上岗")) {
 				renCaiPool.setTime6(visitTime);
+			}
+			if (index==listmap.size()-1) {
+				if (renCaiPool != null) {
+					renCaiPools.add(renCaiPool);
+				}
 			}
 		}
 		ResponseUtil.print(response, new Result(renCaiPools));
