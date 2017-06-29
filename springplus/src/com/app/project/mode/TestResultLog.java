@@ -20,6 +20,8 @@ public class TestResultLog {
 	String testerUserId;
 	@ApiDesc("被测试人姓名")
 	String testedName;
+	@ApiDesc("被测试人的客户id")
+	String testedCustomId;
 	@ApiDesc("被测试人电话")
 	String testedTel;
 	@ApiDesc("被测试人生日")
@@ -35,6 +37,13 @@ public class TestResultLog {
 	@Transient
 	List<TestResultLogOther> list;
 	
+	
+	public String getTestedCustomId() {
+		return testedCustomId;
+	}
+	public void setTestedCustomId(String testedCustomId) {
+		this.testedCustomId = testedCustomId;
+	}
 	public List<TestResultLogOther> getList() {
 		return list;
 	}

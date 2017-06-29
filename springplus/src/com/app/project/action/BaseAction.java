@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alibaba.druid.sql.visitor.functions.If;
 import com.alibaba.fastjson.JSON;
+import com.app.project.mode.RenCaiPool;
 import com.app.project.mode.TestResultLog;
 import com.app.project.mode.TestResultLogOther;
 import com.app.project.mode.User;
@@ -274,6 +275,41 @@ public class BaseAction {
 		map.put("answer", listMaps2);
 		ResponseUtil.print(response, map);
 	}
+	@RequestMapping("/personnelPool")
+	public void personnelPool(HttpServletRequest request,HttpServletResponse response) {
+		Map<String, String> map = AESUtil.converParameter(request);
+		List<RenCaiPool> renCaiPools=new ArrayList<>();
+		List<Map<String, Object>> listmap = myService.getListMapsBySqlId("personnelPool", map);
+		String customId="";
+		for (Map<String, Object> map2 : listmap) {
+			String visitCustomId=StringUtil.valueOf(map2.get("visitCustomId"));
+			String visitProject=StringUtil.valueOf(map2.get("visitProject"));
+			String visitTime=StringUtil.valueOf(map2.get("visitTime"));
+			String customname=StringUtil.valueOf(map2.get("customname"));
+			RenCaiPool renCaiPool=null;
+			if (!visitCustomId.equals(customId)) {
+				if (renCaiPool != null) {
+					renCaiPools.add(renCaiPool);
+				}
+				renCaiPool=new RenCaiPool();
+				renCaiPool.setName(customname);
+			}
+			if (visitProject.equals("关系建立")) {
+				renCaiPool.setTime1(visitTime);
+			}else if (visitProject.equals("性向测验")) {
+				renCaiPool.setTime2(visitTime);
+			}else if (visitProject.equals("面谈报名")) {//面谈报名','受训','结训','上岗','关系建立,性向测验
+				renCaiPool.setTime3(visitTime);
+			}else if (visitProject.equals("受训")) {
+				renCaiPool.setTime4(visitTime);
+			}else if (visitProject.equals("结训")) {
+				renCaiPool.setTime5(visitTime);
+			}else if (visitProject.equals("上岗")) {
+				renCaiPool.setTime6(visitTime);
+			}
+		}
+		ResponseUtil.print(response, new Result(renCaiPools));
+	}
 	
 	/**
 	 * 
@@ -285,6 +321,7 @@ public class BaseAction {
 		TestResultLog resultLog=new TestResultLog();
 		Map<String, String> map = AESUtil.converParameter(request);
 		//添加基础信息
+		resultLog.setTestedCustomId(map.get("testedCustomId"));
 		resultLog.setTesterUserId(map.get("testerUserId"));
 		resultLog.setTestedBirthday(map.get("testedBirthday"));
 		resultLog.setTestedName(map.get("testedName"));

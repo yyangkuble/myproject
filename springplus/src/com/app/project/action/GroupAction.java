@@ -39,6 +39,17 @@ public class GroupAction {
 	@Resource
 	MyService myService;
 	//userId，context，title，groupId
+	
+	@RequestMapping("/group1to3")
+	public void group1to3(HttpServletRequest request,HttpServletResponse response) {
+		Map<String, String> parameter = AESUtil.converParameter(request);
+		String userId2=parameter.get("userId");
+		String userid1 = myService.getSingleResult("select id from user where groupid = (select groupId from user where id = '"+userId2+"') and groupAuth=0");
+		myService.update("update user set groupAuth=2 where id='"+userid1+"'");
+		myService.update("update user set groupAuth=0 where id='"+userId2+"'");
+		ResponseUtil.print(response, new Result());
+	}
+	
 	/**
 	 * 申请加入团队
 	 * @param request

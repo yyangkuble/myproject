@@ -29,6 +29,7 @@ import com.app.project.mode.GroupNotice;
 import com.app.project.mode.GroupTrip;
 import com.app.project.mode.NotifyMessage;
 import com.app.project.mode.User;
+import com.app.project.mode.UserCarPolicyLog;
 import com.app.project.mode.UserTrip;
 import com.app.project.util.PublicUtil;
 import com.app.project.util.Result;
@@ -139,6 +140,12 @@ public class UpdateAndInsertAndDeleteIntecept {
 	 * @return
 	 */
 	public void saveAndUpdateEnd(Object entity,Result result,HandleType handleType) {
+		if (entity instanceof UserCarPolicyLog) {
+			UserCarPolicyLog userCarPolicyLog = (UserCarPolicyLog) result.getData();
+			userCarPolicyLog.setCustomName(baseDao.getSingleResult("select name from custom where id ='"+userCarPolicyLog.getCustomId()+"'"));
+			userCarPolicyLog.setCreateTime(userCarPolicyLog.getCreateTime().substring(0, 10));
+		}
+		
 		if (entity instanceof GroupJournal) {
 			GroupJournal groupJournal = (GroupJournal) result.getData();
 			User user = baseDao.getModel("select b.name,b.imgurl from groupJournal a join user b on a.userId = b.id where a.id='"+groupJournal.getId()+"'",User.class);

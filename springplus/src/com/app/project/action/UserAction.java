@@ -184,7 +184,7 @@ public class UserAction {
 	public void findGroupUsersYeji(HttpServletRequest request ,HttpServletResponse response) {
 		Map<String, String> parameter = AESUtil.converParameter(request);
 		Result result = new Result();
-		String sql="select a.id as userId,imgUrl,a.name,concat(b.policyNumber,'/',b.premium) as yeji from user a left join useryeji b on a.id=b.userId where a.groupid = "+parameter.get("groupId")+" and (b.yejiDate='"+parameter.get("startDate").substring(0,7)+"' or b.yejiDate is null) order by b.premium desc";
+		String sql="select a.id as userId,a.groupAuth,imgUrl,a.name,concat(b.policyNumber,'/',b.premium) as yeji from user a left join useryeji b on a.id=b.userId where a.groupid = "+parameter.get("groupId")+" and (b.yejiDate='"+parameter.get("startDate").substring(0,7)+"' or b.yejiDate is null) order by b.premium desc";
 		List<Map<String, Object>> listMaps = myService.getListMaps(sql);
 		
 		for (Map<String, Object> user : listMaps) {

@@ -48,7 +48,9 @@ public class SelectIntecept {
 		Object listOrMap=result.getData();
 		List<Map<String, Object>> listResult;
 		Map<String, Object> mapResult;
-		
+		if (sqlId.equals("findUserVisitLogByCustomId")) {
+			System.out.println(listOrMap);
+		}
 		//查询用户业绩
 		if (sqlId.equals("selectUserYejiByMonth")) {
 			if (listOrMap != null) {

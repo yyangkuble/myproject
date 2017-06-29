@@ -17,6 +17,9 @@
 	<sql id="findUserByIdMessageUsed">
 		select name,imgUrl from user where id=#{id}
 	</sql>
+	<sql id="UserCarPolicyLogByUserId">
+		select a.*,b.name as customName from UserCarPolicyLog a join custom b on a.customid=b.id where a.userid=#{userId} order by id desc
+	</sql>
 	<!-- 
 		通过客户id查询用户拜访记录
 	 -->

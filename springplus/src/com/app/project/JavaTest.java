@@ -41,7 +41,7 @@ public class JavaTest {
 	@Test
 	public void selectList() throws Exception {
 		Map<String, String> map=new HashMap<>();
-		map.put("customId", "123");
+		map.put("customId", "201706282100553790");
 		String body = TestUtil.aesTest("selectList/findUserVisitLogByCustomId", map);
 		System.out.println(body);
 	}
