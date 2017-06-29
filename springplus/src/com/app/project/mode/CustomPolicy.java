@@ -51,17 +51,12 @@ public class CustomPolicy {
 	public void setInsured(String insured) {
 		this.insured = insured;
 	}
-	public double getPremium() {
+	
+	public Double getPremium() {
 		return premium;
 	}
-	public void setPremium(double premium) {
-		this.premium = premium;
-	}
-	public double getCoverage() {
+	public Double getCoverage() {
 		return coverage;
-	}
-	public void setCoverage(double coverage) {
-		this.coverage = coverage;
 	}
 	public String getProtectYears() {
 		return protectYears;

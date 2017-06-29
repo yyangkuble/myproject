@@ -4,7 +4,7 @@
 		select count(*) as telCount from user where tel = #{tel}
 	</sql>
 	<sql id="selectUserByTel">
-		select * from user where tel = #{tel}
+		select a.*,b.groupName,b.rongCloudGroupId from user a left join group_ b on a.groupid=b.id where tel = #{tel}
 	</sql>
 	<!-- 验证登录 -->
 	<sql id="login">
@@ -12,7 +12,7 @@
 	</sql>
 	<!-- 通过电话查询用户id -->
 	<sql id="findUserById">
-		select a.*,b.groupName,b.rongCloudGroupId from user a join group_ b on a.groupid=b.id where a.id=#{id}
+		select a.*,b.groupName,b.rongCloudGroupId from user a left join group_ b on a.groupid=b.id where a.id=#{id}
 	</sql>
 	<sql id="findUserByIdMessageUsed">
 		select name,imgUrl from user where id=#{id}

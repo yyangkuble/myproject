@@ -26,7 +26,7 @@ public class JavaTest {
 	@Test
 	public void registUser() throws Exception {
 		Map<String, String> map=new HashMap<>();
-		map.put("tel", "123456");
+		map.put("tel", "12345789");
 		map.put("name", "宋荣洋1");
 		String body = TestUtil.aesTest("user/regist", map);
 		System.out.println(body);

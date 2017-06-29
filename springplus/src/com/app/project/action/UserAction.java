@@ -93,7 +93,6 @@ public class UserAction {
 			}else {
 				result.setData(myService.getMapBySqlId("findUserById",AESUtil.converParameter(request)));
 			}
-			
 		}else {
 			Integer telCount = Integer.valueOf(myService.getSingleResultBySqlId("checkTel", EntityMake.makeMapByEnity(user)));
 			if (telCount>0) {
@@ -120,8 +119,8 @@ public class UserAction {
 					myService.update(updateUser);
 					//查询用户信息
 					Map<String, String> map = AESUtil.converParameter(request);
-					map.put("id", user.getId());
-					result.setData(myService.getMapBySqlId("findUserById",map));
+					map.put("tel", user.getTel());
+					result.setData(myService.getMapBySqlId("selectUserByTel",map));
 				}
 			}
 		}
