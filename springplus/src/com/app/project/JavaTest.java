@@ -236,8 +236,8 @@ public class JavaTest {
 	@Test
 	public void findPayAsks() throws Exception {
 		Map<String, String> map=new HashMap<>();
-		map.put("userId", "201706111446064700");
-		//map.put("startDate", "2017-06-01");
+		map.put("userId", "201706082229201860");
+		map.put("mylisens", "yes");
 		String body = TestUtil.aesTest("selectList/findPayAsks", map);
 		System.out.println(body);
 	}

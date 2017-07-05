@@ -4,14 +4,12 @@
 		select aa.*,bb.name as askUserName,cc.name as answerUserName,bb.imgUrl as askUserImg,cc.imgUrl as answerUserImg from (
 		select a.*,case when b.id is null then 0 else 1 end as ispay from 
 		payask a 
-			<if if="mylisens=='yes'">left</if>
+			<if if="mylisens != 'yes'"> left </if>
 		 join payasklog b on a.id=b.payAskId and b.userId=#{userId}
-		) aa join user bb on aa.askuserid=bb.id join user cc on aa.answerUserid=cc.id
-		<where>
+		) aa join user bb on aa.askuserid=bb.id join user cc on aa.answerUserid=cc.id where 1=1
 			<if if="myAsks == 'yes'">
-				aa.askUserId=#{userId}
+				and aa.askUserId=#{userId}
 			</if>
-		</where>
 		<if if="orderby == null">
 			order by aa.answerTime desc
 		</if>
