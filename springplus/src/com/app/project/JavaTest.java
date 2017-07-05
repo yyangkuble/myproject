@@ -233,4 +233,20 @@ public class JavaTest {
 		String body = TestUtil.aesTest("base/personnelPool", map);
 		System.out.println(body);
 	}
+	@Test
+	public void findPayAsks() throws Exception {
+		Map<String, String> map=new HashMap<>();
+		map.put("userId", "201706111446064700");
+		//map.put("startDate", "2017-06-01");
+		String body = TestUtil.aesTest("selectList/findPayAsks", map);
+		System.out.println(body);
+	}
+	@Test
+	public void findPayAsksyes() throws Exception {
+		Map<String, String> map=new HashMap<>();
+		map.put("userId", "201706111446064700");
+		map.put("payAskId", "1232");
+		String body = TestUtil.aesTest("payAsk/yes", map);
+		System.out.println(body);
+	}
 }

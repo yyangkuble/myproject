@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls modeName="用户" xmlns="http://www.springmvcplus.com/schema/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.springmvcplus.com/schema/sql sql.xsd">
+	<sql id="findPayAsks">
+		select aa.*,bb.name as askUserName,cc.name as answerUserName,bb.imgUrl as askUserImg,cc.imgUrl as answerUserImg from (
+		select a.*,case when b.id is null then 0 else 1 end as ispay from 
+		payask a 
+			<if if="mylisens=='yes'">left</if>
+		 join payasklog b on a.id=b.payAskId and b.userId=#{userId}
+		) aa join user bb on aa.askuserid=bb.id join user cc on aa.answerUserid=cc.id
+		<where>
+			<if if="myAsks == 'yes'">
+				aa.askUserId=#{userId}
+			</if>
+		</where>
+		<if if="orderby == null">
+			order by aa.answerTime desc
+		</if>
+		<elseif if="orderby == 'yesNumber'">
+			order by aa.yesNumber desc
+		</elseif>
+		<elseif if="orderby == 'askTime'">
+			order by aa.askTime desc
+		</elseif>
+		<else>
+			order by aa.answerTime desc
+		</else>
+		
+	</sql>
+	
+	
+	
+</sqls>
