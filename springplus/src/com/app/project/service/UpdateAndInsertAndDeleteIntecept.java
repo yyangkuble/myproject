@@ -21,6 +21,10 @@ import www.springmvcplus.com.util.system.SqlUtil;
 
 import com.alibaba.fastjson.JSON;
 import com.app.project.jobs.UserTripJobs;
+import com.app.project.mode.Answer;
+import com.app.project.mode.AnswerComments;
+import com.app.project.mode.AnswerYes;
+import com.app.project.mode.Ask;
 import com.app.project.mode.Custom;
 import com.app.project.mode.Group;
 import com.app.project.mode.GroupJournal;
@@ -51,7 +55,6 @@ public class UpdateAndInsertAndDeleteIntecept {
 				// TODO Auto-generated catch block
 			}
 		}
-		
 		if (entity instanceof GroupTrip) {
 			GroupTrip groupTrip = (GroupTrip) entity;
 			if (StringUtil.hashText(groupTrip.getStartTime())) {
@@ -60,7 +63,6 @@ public class UpdateAndInsertAndDeleteIntecept {
 			if (StringUtil.hashText(groupTrip.getEndTime())) {
 				groupTrip.setEndDate(groupTrip.getEndTime().substring(0,10));
 			}
-			
 		}
 		
 		if (entity instanceof GroupNotice) {
@@ -140,6 +142,25 @@ public class UpdateAndInsertAndDeleteIntecept {
 	 * @return
 	 */
 	public void saveAndUpdateEnd(Object entity,Result result,HandleType handleType) {
+		//添加回答
+		if (entity instanceof Answer && handleType == HandleType.save) {
+			Answer answer = (Answer) entity;
+			baseDao.execute("update ask set answerCount=answerCount+1,bestAnswerId='"+baseDao.getSingleResult("select a.id from answer a join user b on a.userId = b.id where a.askId = '"+answer.getAskId()+"' order by b.iszhuanjia desc,a.yesCount desc limit 0,1")+"' where id = '"+answer.getAskId()+"'");
+			
+		}
+		//添加 回答的 评论
+		if (entity instanceof AnswerComments && handleType == HandleType.save) {
+			AnswerComments answer = (AnswerComments) entity;
+			baseDao.execute("update answer set commentCount=commentCount+1 where id = '"+answer.getAnswerId()+"'");
+		}
+		//点赞
+		if (entity instanceof AnswerYes && handleType == HandleType.save) {
+			AnswerYes answer = (AnswerYes) entity;
+			baseDao.execute("update answer set yesCount=yesCount+1 where id = '"+answer.getAnswerId()+"'");
+			baseDao.execute("update ask set allYesCount=allYesCount+1,bestAnswerId='"+baseDao.getSingleResult("select a.id from answer a join user b on a.userId = b.id where a.askId = (select askid from answer where id = '"+answer.getAnswerId()+"') order by b.iszhuanjia desc,a.yesCount desc limit 0,1")+"' where id = (select askid from answer where id = '"+answer.getAnswerId()+"')");
+		}
+		
+		
 		if (entity instanceof UserCarPolicyLog) {
 			UserCarPolicyLog userCarPolicyLog = (UserCarPolicyLog) result.getData();
 			userCarPolicyLog.setCustomName(baseDao.getSingleResult("select name from custom where id ='"+userCarPolicyLog.getCustomId()+"'"));

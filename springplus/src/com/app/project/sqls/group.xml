@@ -28,9 +28,16 @@
 	</sql>
 	<!-- 通过组id查询所有日志 -->
 	<sql id="groupJournalAll">
-		select a.*,b.name as userName,b.imgUrl as userImgUrl from GroupJournal a join user b on a.userid=b.id where a.groupId=#{groupId}
+		select a.*,b.name as userName,b.imgUrl as userImgUrl from GroupJournal a join user b on a.userid=b.id 
+		where 1=1 
+		<if if="groupId != null">
+			and a.groupId=#{groupId}
+		</if>
 		<if if="journalId != null">
 			and a.id = #{journalId}
+		</if>
+		<if if="userId != null">
+			and a.userid=#{userId}
 		</if>
 		 order by a.id desc
 	</sql>

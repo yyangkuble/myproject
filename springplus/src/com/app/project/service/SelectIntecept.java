@@ -61,7 +61,15 @@ public class SelectIntecept {
 				mapResult.put("visitCount", baseDao.getSingleResultBySqlId("selectVisitCount", parameter));
 			}
 		}
-		
+		if (sqlId.equals("myAnswerAskList")) {//我的问题  回答
+			listResult=(List<Map<String, Object>>) listOrMap;
+			for (Map<String, Object> map : listResult) {
+				parameter.put("askId", map.get("askId").toString());
+				List<Map<String, Object>> myAnswerList = baseDao.getListMapsBySqlId("myAnswerList", parameter);
+				map.put("myAnswerList", myAnswerList);
+			}
+			
+		}
 		if (sqlId.equals("groupJournalAll")) {
 			listResult=(List<Map<String, Object>>) listOrMap;
 			for (Map<String, Object> resultmap : listResult) {

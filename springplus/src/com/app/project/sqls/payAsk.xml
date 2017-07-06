@@ -6,7 +6,7 @@
 		payask a 
 			<if if="mylisens != 'yes'"> left </if>
 		 join payasklog b on a.id=b.payAskId and b.userId=#{userId}
-		) aa join user bb on aa.askuserid=bb.id join user cc on aa.answerUserid=cc.id where 1=1
+		) aa join user bb on aa.askuserid=bb.id left join user cc on aa.answerUserid=cc.id where 1=1
 			<if if="myAsks == 'yes'">
 				and aa.askUserId=#{userId}
 			</if>
@@ -26,5 +26,47 @@
 	</sql>
 	
 	
+	<!-- 问答 -->
+	<!-- 问答的列表 -->
+	<sql id="askList">
+		select a.id as askId,a.title as askTitle,a.context as askContext,a.answerCount,a.allYesCount,a.createTime as askCreateTime,b.answerType,b.createTime as answerCreateTime,b.yesCount as answerYesCount,b.fileUrls as answerFileUrl,b.context as answerContext,b.commentCount as answerCommentCount,c.imgUrl as askUserImgUrl,c.name as askUserName,d.imgUrl as answerUserImgUrl,d.name as answerUserName,d.iszhuanjia from ask a left join answer b on a.bestAnswerId=b.id join user c on a.userId=c.id left join user d on b.userId=d.id 
+		where 1=1
+		<if if="askType != null">
+			and a.askType=#{askType}
+		</if>
+		<if if="askUserId != null">
+			and a.userId=#{askUserId}
+		</if>
+		<if if="askId != null">
+			and a.id=#{askId}
+		</if>
+		<if if="sort == 'bestnew'">
+			order by a.createTime desc
+		</if>
+		<else>
+			order by a.allyescount desc
+		</else>
+	</sql>
+	<!-- 回答列表 -->
+	<sql id="answerList">
+		select b.id as answerId,b.answerType,b.createTime as answerCreateTime,b.yesCount as answerYesCount,b.fileUrls as answerFileUrl,b.context as answerContext,b.commentCount as answerCommentCount,d.imgUrl as answerUserImgUrl,d.name as answerUserName,d.iszhuanjia from  answer b  join user d on b.userId=d.id
+		 where b.askId = #{askId} and b.id <> (select bestAnswerId from ask where id=#{askId}) order by d.iszhuanjia desc,b.yesCount desc,b.createTime desc
+	</sql>
+	<!-- 查询我的问答列表 -->
+	<sql id="myAnswerAskList">
+		select a.id as askId,a.title as askTitle,a.context as askContext,a.answerCount,a.allYesCount,a.createTime as askCreateTime,c.imgUrl as askUserImgUrl,c.name as askUserName from ask a  join user c on a.userId=c.id
+		where a.id in(select distinct askId from answer where userid=#{userId}) 
+	</sql>
+	<!-- 我的回答列表 -->
+	<sql id="myAnswerList">
+		select case when a.bestAnswerId is not null then 1 else 0 end as isbestAnswer,b.id as answerId,b.answerType,b.createTime as answerCreateTime,b.yesCount as answerYesCount,b.fileUrls as answerFileUrl,b.context as answerContext,b.commentCount as answerCommentCount,d.imgUrl as answerUserImgUrl,d.name as answerUserName,d.iszhuanjia 
+		from  answer b  join user d on b.userId=d.id left join ask a on b.id=a.bestAnswerId
+		 where b.askId = #{askId} and b.userId=#{userId}  order by isbestAnswer desc,b.yesCount desc,b.createTime desc
+	</sql>
+	<sql id="answerComment">
+		(select a.createTime,b.imgUrl as userImgUrl,b.name as username,a.context,'comment' as type from answercomments a join user b on a.userId=b.id where a.answerId=#{answerId} order by a.id desc )
+		union all
+		(select a.createTime,b.imgUrl as userImgUrl,b.name as username,'' as context,'zhan' as type from answeryes a join user b on a.userId=b.id where a.answerId=#{answerId} order by a.id desc )
+	</sql>
 	
 </sqls>

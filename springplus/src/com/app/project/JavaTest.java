@@ -228,8 +228,6 @@ public class JavaTest {
 	public void personnelPool() throws Exception {
 		Map<String, String> map=new HashMap<>();
 		map.put("groupId", "10022");
-		map.put("startDate", "2017-06-01");
-		map.put("endDate", "2017-06-31");
 		String body = TestUtil.aesTest("base/personnelPool", map);
 		System.out.println(body);
 	}
@@ -247,6 +245,23 @@ public class JavaTest {
 		map.put("userId", "201706111446064700");
 		map.put("payAskId", "1232");
 		String body = TestUtil.aesTest("payAsk/yes", map);
+		System.out.println(body);
+	}
+	
+	@Test
+	public void findAsks() throws Exception {
+		Map<String, String> map=new HashMap<>();
+		map.put("answerId", "sdfasfas");
+		String body = TestUtil.aesTest("selectList/answerComment", map);
+		System.out.println(body);
+	}
+	
+	
+	@Test
+	public void saveAnswer() throws Exception {
+		Map<String, String> map=new HashMap<>();
+		map.put("userId", "201706082229201860");
+		String body = TestUtil.aesTest("selectList/myAnswerAskList", map);
 		System.out.println(body);
 	}
 }

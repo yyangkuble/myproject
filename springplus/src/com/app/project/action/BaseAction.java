@@ -295,6 +295,7 @@ public class BaseAction {
 				renCaiPool=new RenCaiPool();
 				renCaiPool.setName(customname);
 			}
+			customId=visitCustomId;
 			if (visitProject.equals("关系建立")) {
 				renCaiPool.setTime1(visitTime);
 			}else if (visitProject.equals("性向测验")) {

@@ -64,6 +64,9 @@ public class AESUtil {
 		String param=request.getParameter("p");
 		if (StringUtil.hashText(param)) {
 			try {
+				if (request.getRequestURI().endsWith("base/personnelPool")) {
+					System.out.println("d");
+				}
 				param=AESUtil.aesDecryptString(param, "16BytesLengthKey");
 			} catch (InvalidKeyException | NoSuchAlgorithmException
 					| NoSuchPaddingException

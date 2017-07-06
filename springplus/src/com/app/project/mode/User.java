@@ -59,15 +59,16 @@ public class User {
 	Integer customWarn;
 	@ApiDesc("是否在WiFi下看视频  0：不是，1：是，，默认为1")
 	Integer wifiVideo;
-	@ApiDesc("是否是专家")
-	Integer iszhanjia;
+	@ApiDesc("是否是专家   1：专家")
+	Integer iszhuanjia;
 	
 	
-	public Integer getIszhanjia() {
-		return iszhanjia;
+	
+	public Integer getIszhuanjia() {
+		return iszhuanjia;
 	}
-	public void setIszhanjia(Integer iszhanjia) {
-		this.iszhanjia = iszhanjia;
+	public void setIszhuanjia(Integer iszhuanjia) {
+		this.iszhuanjia = iszhuanjia;
 	}
 	public String getCompany() {
 		return company;
