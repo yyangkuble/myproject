@@ -34,4 +34,18 @@
 	<sql id="findUserTripById">
 		select * from userTrip where id = #{id}
 	</sql>
+	<!-- 查询体现记录 -->
+	<sql id="findMoneyLog">
+		select * from moneyLog where userid=#{userId} and title='提取现金' order by id desc
+	</sql>
+	<!-- 查询邀请好友记录 -->
+	<sql id="findUserAskLog">
+		select a.createTime,b.name,a.isVip,a.myMoney from UserFriendsAsk a join user b on a.friendUserId=b.id
+		where a.userId=#{userId} order by a.id desc
+	</sql>
+	<!-- 查询邀请好友记录 -->
+	<sql id="findUserAskCount">
+		select count(*) as count from UserFriendsAsk
+		where userId=#{userId} and isVip = 1
+	</sql>
 </sqls>

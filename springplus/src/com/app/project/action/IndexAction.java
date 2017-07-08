@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alibaba.fastjson.JSON;
@@ -28,6 +29,14 @@ import www.springmvcplus.com.util.StringUtil;
 public class IndexAction {
 	@Resource
 	MyService myService;
+	
+	
+	@RequestMapping("/{tel}/friends")
+	public String askfriends(HttpServletRequest request,@PathVariable String tel) {
+		User user = myService.getModel("select name,imgUrl,id from user where tel='"+tel+"'", User.class);
+		request.setAttribute("user", user);
+		return "askfriend";
+	}
 	
 	@RequestMapping("/")
 	public String index(HttpServletRequest request) {

@@ -11,14 +11,17 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.catalina.util.RequestUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alibaba.fastjson.JSON;
 import com.app.project.mode.Group;
 import com.app.project.mode.User;
+import com.app.project.mode.UserFriendsAsk;
 import com.app.project.mode.UserTrip;
 import com.app.project.mode.UserVisitLog;
+import com.app.project.service.UpdateAndInsertAndDeleteIntecept.HandleType;
 import com.app.project.util.PublicUtil;
 import com.app.project.util.Result;
 
@@ -102,11 +105,20 @@ public class UserAction {
 				user.setTripWarn("半小时前");
 				user.setCustomWarn(1);
 				user.setWifiVideo(1);
+				user.setMoney(0.00);
+				user.setHistoryMoney(0.00);
 				int res=myService.save(user);
 				if (res==0) {
 					result.setErrorCode(1);//未保存成功
 					result.setErrorMessage("系统故障");
 				}else {
+					//是否是邀请来的，如果是邀请来的，修改邀请记录
+					Integer count = Integer.valueOf(myService.getSingleResult("select count(*) from UserFriendsAsk where friendTel = '"+user.getTel()+"'"));
+					if (count >0 ) {
+						//修改邀请记录
+						myService.update("update UserFriendsAsk set friendUserId = '"+user.getId()+"' where friendTel = '"+user.getTel()+"'");
+					}
+					
 					//添加融云token
 					User updateUser=new User();
 					updateUser.setId(user.getId());
@@ -130,6 +142,36 @@ public class UserAction {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	@RequestMapping("/askFriend")
+	public void askFriend(UserFriendsAsk userFriendsAsk,HttpServletResponse response) {
+			Result result = new Result();
+			userFriendsAsk.setFriendMoney(0);
+			userFriendsAsk.setIsVip(0);
+			userFriendsAsk.setMyMoney(0);
+			userFriendsAsk.setCreateTime(DateUtil.getDate());
+			//电话不能注册，也没有被邀请过
+			Integer count = Integer.valueOf(myService.getSingleResult("select count(*) from UserFriendsAsk where friendTel = '"+userFriendsAsk.getFriendTel()+"'"));
+			if (count>0) {
+				result.setErrorCode(1);
+				result.setErrorMessage("您已经被邀请过");
+			}else {
+				//是否已经注册
+				count = Integer.valueOf(myService.getSingleResult("select count(*) from User where tel = '"+userFriendsAsk.getFriendTel()+"'"));
+				if (count>0) {
+					result.setErrorCode(1);
+					result.setErrorMessage("您已经是我们的用户");
+				}else {
+					myService.save(userFriendsAsk);
+				}
+			}
+			ResponseUtil.print(response, result);
+	}
+	@RequestMapping("/UpdateNotifyMessageByUserId")
+	public void UpdateNotifyMessageByUserId(HttpServletRequest request,HttpServletResponse response) {
+		Map<String, String> map = AESUtil.converParameter(request);
+		myService.update("update NotifyMessage set isread=1 where toUserId='"+map.get("userId")+"'");
+		ResponseUtil.print(response, new Result());
 	}
 	/**
 	 * 修改客户信息

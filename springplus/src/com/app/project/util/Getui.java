@@ -16,13 +16,13 @@ import com.gexin.rp.sdk.template.TransmissionTemplate;
 
 public class Getui {
 	//首先定义一些常量, 修改成开发者平台获得的值
-    public static String appId = "PvRh52wHVEA6uVxJHlYeUA";
-    public static String appKey = "7NDli7VBpH7jEJnSxbkPl5";
-    public static String masterSecret = "8yPG9u99Or7ZPVXcCwjry9";
+    public static String appId = "6cBdFepiNoA9OzwPQRxPk6";
+    public static String appKey = "bFncaMC7T977AB6Sju0E";
+    public static String masterSecret = "8Nd0kxaLUE83RZomX17G17";
     public static String url = "http://sdk.open.api.igexin.com/apiex.htm";
     public static IGtPush push = new IGtPush(url,appKey, masterSecret);
-    public static String keyPath= "WEB-INF/classes/configs/aps.p12";
-	public static String password="Be2016it";
+    public static String keyPath= "WEB-INF/classes/configs/BaoXianDK.p12";
+	public static String password="123456";
     
 	public static String sendMessage(String userid,String message) {
 		
@@ -65,5 +65,9 @@ public class Getui {
     	target.setAlias(userid);
     	return target;
     }
+    
+    public static void main(String[] args) {
+		
+	}
    
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqls modeName="用户" xmlns="http://www.springmvcplus.com/schema/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.springmvcplus.com/schema/sql sql.xsd">
 	<sql id="findPayAsks">
-		select aa.*,bb.name as askUserName,cc.name as answerUserName,bb.imgUrl as askUserImg,cc.imgUrl as answerUserImg from (
+		select aa.*,bb.name as askUserName,cc.name as answerUserName,bb.imgUrl as askUserImg,cc.imgUrl as answerUserImg,cc.company as answerUserCompany,cc.job as answerUserJob from (
 		select a.*,case when b.id is null then 0 else 1 end as ispay from 
 		payask a 
 			<if if="mylisens != 'yes'"> left </if>
@@ -29,7 +29,7 @@
 	<!-- 问答 -->
 	<!-- 问答的列表 -->
 	<sql id="askList">
-		select a.id as askId,a.title as askTitle,a.context as askContext,a.answerCount,a.allYesCount,a.createTime as askCreateTime,b.answerType,b.createTime as answerCreateTime,b.yesCount as answerYesCount,b.fileUrls as answerFileUrl,b.context as answerContext,b.commentCount as answerCommentCount,c.imgUrl as askUserImgUrl,c.name as askUserName,d.imgUrl as answerUserImgUrl,d.name as answerUserName,d.iszhuanjia from ask a left join answer b on a.bestAnswerId=b.id join user c on a.userId=c.id left join user d on b.userId=d.id 
+		select a.id as askId,a.imgUrls as askImgUrls,a.title as askTitle,a.context as askContext,a.answerCount,a.allYesCount,a.createTime as askCreateTime,b.id as answerId,b.answerType,b.createTime as answerCreateTime,b.voiceTime as answerVoiceTime,b.yesCount as answerYesCount,b.fileUrls as answerFileUrl,b.context as answerContext,b.commentCount as answerCommentCount,c.imgUrl as askUserImgUrl,c.name as askUserName,d.imgUrl as answerUserImgUrl,d.name as answerUserName,d.iszhuanjia from ask a left join answer b on a.bestAnswerId=b.id join user c on a.userId=c.id left join user d on b.userId=d.id 
 		where 1=1
 		<if if="askType != null">
 			and a.askType=#{askType}
@@ -49,7 +49,7 @@
 	</sql>
 	<!-- 回答列表 -->
 	<sql id="answerList">
-		select b.id as answerId,b.answerType,b.createTime as answerCreateTime,b.yesCount as answerYesCount,b.fileUrls as answerFileUrl,b.context as answerContext,b.commentCount as answerCommentCount,d.imgUrl as answerUserImgUrl,d.name as answerUserName,d.iszhuanjia from  answer b  join user d on b.userId=d.id
+		select b.id as answerId,b.answerType,b.createTime as answerCreateTime,b.yesCount as answerYesCount,b.fileUrls as answerFileUrl,b.context as answerContext,b.voiceTime as answerVoiceTime,b.commentCount as answerCommentCount,d.imgUrl as answerUserImgUrl,d.name as answerUserName,d.iszhuanjia from  answer b  join user d on b.userId=d.id
 		 where b.askId = #{askId} and b.id <> (select bestAnswerId from ask where id=#{askId}) order by d.iszhuanjia desc,b.yesCount desc,b.createTime desc
 	</sql>
 	<!-- 查询我的问答列表 -->
@@ -59,7 +59,7 @@
 	</sql>
 	<!-- 我的回答列表 -->
 	<sql id="myAnswerList">
-		select case when a.bestAnswerId is not null then 1 else 0 end as isbestAnswer,b.id as answerId,b.answerType,b.createTime as answerCreateTime,b.yesCount as answerYesCount,b.fileUrls as answerFileUrl,b.context as answerContext,b.commentCount as answerCommentCount,d.imgUrl as answerUserImgUrl,d.name as answerUserName,d.iszhuanjia 
+		select case when a.bestAnswerId is not null then 1 else 0 end as isbestAnswer,b.id as answerId,b.voiceTime as answerVoiceTime,b.answerType,b.createTime as answerCreateTime,b.yesCount as answerYesCount,b.fileUrls as answerFileUrl,b.context as answerContext,b.commentCount as answerCommentCount,d.imgUrl as answerUserImgUrl,d.name as answerUserName,d.iszhuanjia 
 		from  answer b  join user d on b.userId=d.id left join ask a on b.id=a.bestAnswerId
 		 where b.askId = #{askId} and b.userId=#{userId}  order by isbestAnswer desc,b.yesCount desc,b.createTime desc
 	</sql>

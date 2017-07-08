@@ -34,6 +34,7 @@ import com.app.project.mode.GroupTrip;
 import com.app.project.mode.NotifyMessage;
 import com.app.project.mode.User;
 import com.app.project.mode.UserCarPolicyLog;
+import com.app.project.mode.UserFriendsAsk;
 import com.app.project.mode.UserTrip;
 import com.app.project.util.PublicUtil;
 import com.app.project.util.Result;
@@ -55,6 +56,27 @@ public class UpdateAndInsertAndDeleteIntecept {
 				// TODO Auto-generated catch block
 			}
 		}
+		if (entity instanceof Ask && handleType == HandleType.save) {
+			Ask ask = (Ask) entity;
+			ask.setAllYesCount(0);
+			ask.setAnswerCount(0);
+		}
+		if (entity instanceof Answer && handleType == HandleType.save) {
+			Answer answer = (Answer) entity;
+			answer.setCommentCount(0);
+			answer.setYesCount(0);
+		}
+		if (entity instanceof GroupJournalComment) {
+			GroupJournalComment groupJournalComment = (GroupJournalComment) entity;
+			if (groupJournalComment.getContext().equals("_Fabulous_")) {//判断是否重复点赞
+				String singleResult = baseDao.getSingleResult("select count(*) from where journalId='"+groupJournalComment.getJournalId()+"' and userId='"+groupJournalComment.getUserId()+"'");
+				if (Integer.valueOf(singleResult) >0) {
+					result.setErrorCode(1);
+					result.setErrorMessage("重复点赞");
+				}
+			}
+		}
+		
 		if (entity instanceof GroupTrip) {
 			GroupTrip groupTrip = (GroupTrip) entity;
 			if (StringUtil.hashText(groupTrip.getStartTime())) {

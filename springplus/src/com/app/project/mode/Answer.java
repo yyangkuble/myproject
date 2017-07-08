@@ -21,6 +21,7 @@ public class Answer {
 	String answerType;//回答类型  text,voice
 	@Text
 	String fileUrls;//如果answerType 是text为图片url集合,  如果answerType是voice为语音url
+	String voiceTime;//语音时长
 	String userId;//回答人
 	Integer yesCount;//赞数量
 	Integer commentCount;//评论数量
@@ -28,6 +29,14 @@ public class Answer {
 	String askId;//问题id
 	
 	
+	
+	
+	public String getVoiceTime() {
+		return voiceTime;
+	}
+	public void setVoiceTime(String voiceTime) {
+		this.voiceTime = voiceTime;
+	}
 	public String getAskId() {
 		return askId;
 	}

@@ -61,9 +61,23 @@ public class User {
 	Integer wifiVideo;
 	@ApiDesc("是否是专家   1：专家")
 	Integer iszhuanjia;
+	Double money;//金额   最多两位小数点
+	Double historyMoney;//历史红包总金额   最多两位小数点
 	
 	
-	
+
+	public Double getMoney() {
+		return money;
+	}
+	public void setMoney(Double money) {
+		this.money = money;
+	}
+	public Double getHistoryMoney() {
+		return historyMoney;
+	}
+	public void setHistoryMoney(Double historyMoney) {
+		this.historyMoney = historyMoney;
+	}
 	public Integer getIszhuanjia() {
 		return iszhuanjia;
 	}
