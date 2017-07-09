@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.app.project.service.PublicService;
 
 import www.springmvcplus.com.common.ApiInit;
 import www.springmvcplus.com.common.SpringMVCPlusArgsConfig;
@@ -58,6 +59,9 @@ public class AppFastInit implements ApplicationListener<ContextRefreshedEvent>  
 		XmlSqlParse.initScriptEngine();
 		//加载api
 		//ApiInit.apiInit();
+		//初始化任务
+		PublicService publicService = SpringBeanUtil.getBean(PublicService.class);
+		publicService.initJobs();
 	}
 	
 

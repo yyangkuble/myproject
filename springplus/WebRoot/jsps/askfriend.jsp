@@ -25,7 +25,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		
 		html,body{
 			margin: 0;padding: 0;
-			height: 720px;width: 100%;
+			height: 666px;width: 100%;
 			background-color: #FBCA04;
 		}
 		.imgall{
@@ -36,11 +36,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   
   <body>
    	<div class="ub ub-ver" style="height: calc(100% - 40px);">
-   		<div class="ub" style="height: 54px;background-color: #1B1B20;" >
-   			<div style="width: 100px;color: white;font-size: 1.2em;" class="ymiddle" ><i class="fa fa-angle-left" style="font-size: 2em;margin-right: 3px;margin-left: 12px;"></i>返回</div>
-   			<div class="ub-f1 ymiddle xcenter" style="color: white;font-size: 1.3em;">我的邀请</div>
-   			<div style="width: 100px;"></div>
-   		</div>
    		<div class="ub-f1 imgall" style="background-image: url('resource/imgs/baoxian/09.png');">
    			<div class="imgall" style="height:100px;background-image: url('resource/imgs/baoxian/01.png');width: calc(100% - 26px);margin-left: 5px;">
    				<div style="height: 34px;"></div>
@@ -66,8 +61,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
    		</div>
    	</div>
    	
-   	<div class="mengban" style="height: 720px; width: 100%;position: absolute;left: 0;top: 0;z-index: 10;background-color: RGBA(0,0,0,0.5);display: none;"></div>
-   	<div class="mengban" style="height: 720px; width: 100%;position: absolute;left: 0;top: 0;z-index: 11;display: none;">
+   	<div class="mengban" style="height: 666px; width: 100%;position: absolute;left: 0;top: 0;z-index: 10;background-color: RGBA(0,0,0,0.5);display: none;"></div>
+   	<div class="mengban" style="height: 666px; width: 100%;position: absolute;left: 0;top: 0;z-index: 11;display: none;">
    		<div class="imgall" style="height:290px;background-image: url('resource/imgs/baoxian/05.png');width: calc(100% - 80px);margin-left: 40px;margin-top: 180px;">
    			<div style="height: 110px;"></div>
    			<div style="padding-left: 40px;padding-right: 40px;">

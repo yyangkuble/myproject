@@ -48,9 +48,16 @@ public class GroupTrip {
 	String context;
 	@ApiDesc("是否提醒： 0：不提醒，1：提醒")
 	Integer isWarn;
+	@Transient
+	Boolean isVisitTimeUpdate=false;
 	
 	
-	
+	public Boolean getIsVisitTimeUpdate() {
+		return isVisitTimeUpdate;
+	}
+	public void setIsVisitTimeUpdate(Boolean isVisitTimeUpdate) {
+		this.isVisitTimeUpdate = isVisitTimeUpdate;
+	}
 	public String getStartDate() {
 		return startDate;
 	}

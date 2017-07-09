@@ -55,6 +55,8 @@ public class User {
 	String job;
 	@ApiDesc("日程提醒    选项为：不提醒，15分钟前，半小时前，1小时前，2小时前，3小时前，24小时前  ，默认为半小时")
 	String tripWarn;
+	@Transient
+	Boolean isUpdateTripWarn=false;//是否修改了日程提醒
 	@ApiDesc("客户自动升级提醒，0：不是  1：是，默认为1")
 	Integer customWarn;
 	@ApiDesc("是否在WiFi下看视频  0：不是，1：是，，默认为1")
@@ -66,6 +68,12 @@ public class User {
 	
 	
 
+	public Boolean getIsUpdateTripWarn() {
+		return isUpdateTripWarn;
+	}
+	public void setIsUpdateTripWarn(Boolean isUpdateTripWarn) {
+		this.isUpdateTripWarn = isUpdateTripWarn;
+	}
 	public Double getMoney() {
 		return money;
 	}

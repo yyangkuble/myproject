@@ -48,8 +48,17 @@ public class UserTrip {
 	@Transient
 	@ApiDesc("超时时间")
 	String triptimeout;
+	@Transient
+	Boolean isVisitTimeUpdate=false;
 	
 	
+	
+	public Boolean getIsVisitTimeUpdate() {
+		return isVisitTimeUpdate;
+	}
+	public void setIsVisitTimeUpdate(Boolean isVisitTimeUpdate) {
+		this.isVisitTimeUpdate = isVisitTimeUpdate;
+	}
 	public String getVisitCustomLevel() {
 		return visitCustomLevel;
 	}

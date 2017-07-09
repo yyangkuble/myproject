@@ -2,6 +2,7 @@ package com.app.project.service;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import www.springmvcplus.com.dao.BaseDao;
+import www.springmvcplus.com.modes.Job;
 import www.springmvcplus.com.services.service.MyService;
 import www.springmvcplus.com.util.DateUtil;
 import www.springmvcplus.com.util.IdManage;
@@ -35,9 +37,11 @@ import com.app.project.mode.NotifyMessage;
 import com.app.project.mode.User;
 import com.app.project.mode.UserCarPolicyLog;
 import com.app.project.mode.UserFriendsAsk;
+import com.app.project.mode.UserImgsShare;
 import com.app.project.mode.UserTrip;
 import com.app.project.util.PublicUtil;
 import com.app.project.util.Result;
+import com.app.project.util.UserTripJobUitl;
 import com.ibm.db2.jcc.t4.ob;
 @Service
 public class UpdateAndInsertAndDeleteIntecept {
@@ -54,6 +58,15 @@ public class UpdateAndInsertAndDeleteIntecept {
 				field.set(entity, DateUtil.getDate());
 			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				// TODO Auto-generated catch block
+			}
+		}
+		if (entity instanceof User && handleType==HandleType.update) {
+			User user = (User) entity;
+			if (StringUtil.hashText(user.getTripWarn())) {//判断是否修改了tripWarn    修改了之后需要更改用户的提醒任务
+				String tripwarn = baseDao.getSingleResult("select tripwarn from user where id = '"+user.getId()+"'");
+				if (!tripwarn.equals(user.getTripWarn())) {
+					user.setIsUpdateTripWarn(true);
+				}
 			}
 		}
 		if (entity instanceof Ask && handleType == HandleType.save) {
@@ -85,6 +98,11 @@ public class UpdateAndInsertAndDeleteIntecept {
 			if (StringUtil.hashText(groupTrip.getEndTime())) {
 				groupTrip.setEndDate(groupTrip.getEndTime().substring(0,10));
 			}
+			if (handleType==handleType.update) {
+				if (!groupTrip.getStartTime().equals(baseDao.getSingleResult("select starttime from groupTrip where id='"+groupTrip.getId()+"'"))) {
+					groupTrip.setIsVisitTimeUpdate(true);
+				}
+			}
 		}
 		
 		if (entity instanceof GroupNotice) {
@@ -100,6 +118,11 @@ public class UpdateAndInsertAndDeleteIntecept {
 			}
 			if (StringUtil.hashText(userTrip.getVisitTime())) {
 				userTrip.setVisitDate(userTrip.getVisitTime().substring(0, 10));
+			}
+			if (handleType==handleType.update) {
+				if (!userTrip.getVisitTime().equals(baseDao.getSingleResult("select visittime from usertrip where id='"+userTrip.getId()+"'"))) {
+					userTrip.setIsVisitTimeUpdate(true);
+				}
 			}
 		}
 		/*if(entity instanceof User){
@@ -164,6 +187,10 @@ public class UpdateAndInsertAndDeleteIntecept {
 	 * @return
 	 */
 	public void saveAndUpdateEnd(Object entity,Result result,HandleType handleType) {
+		if (entity instanceof UserImgsShare) {
+			UserImgsShare userImgsShare = (UserImgsShare) result.getData();
+			userImgsShare.setShareUrl("share/"+userImgsShare.getId());
+		}
 		//添加回答
 		if (entity instanceof Answer && handleType == HandleType.save) {
 			Answer answer = (Answer) entity;
@@ -224,29 +251,48 @@ public class UpdateAndInsertAndDeleteIntecept {
 					user2.setRongCloudGroupId(group.getRongCloudGroupId());
 					user2.setGroupName(group.getGroupName());
 				}
+				//判断是否修改了  提醒任务  默认为半个小时
+				if (user.getIsUpdateTripWarn()) {
+					List<Job> jobs = baseDao.getListModels("select a.*,case when b.visitTime is null then c.startTime else b.visitTime end as servicetime from job a left join usertrip b on a.serviceId = b.id left join grouptrip c on a.serviceId=c.id where userId = '"+user.getId()+"'",Job.class);
+					baseDao.delete("delete from job where userId = '"+user.getId()+"'");
+					for (Job job : jobs) {
+						Date timeRun = JobManager.getDateByVisitDate(job.getServicetime(), user.getTripWarn());
+						Map<String,Object> map = JSON.parseObject(job.getJsonData(), Map.class);
+						JobManager.addJob(job.getJobId(), UserTripJobs.class, timeRun, map);
+					}
+				}
 			}
 		}
 		
 		if (entity instanceof UserTrip) {
+			UserTrip userTripParam=(UserTrip) entity;
 			UserTrip userTrip = (UserTrip) result.getData();
 			Map<String, Object> map = baseDao.getMap("select b.name as customName,b.level as customLevel,UNIX_TIMESTAMP()-cast(UNIX_TIMESTAMP(a.visitTime) as SIGNED INTEGER) as triptimeout from usertrip a join custom b on a.visitCustomId = b.id where a.id = '"+userTrip.getId()+"'");
-			userTrip.setVisitCustomName(map.get("customName").toString());
-			userTrip.setVisitCustomLevel(map.get("customLevel").toString());
-			userTrip.setTriptimeout(map.get("triptimeout").toString());
+			userTrip.setVisitCustomName(StringUtil.valueOf(map.get("customName")));
+			userTrip.setVisitCustomLevel(StringUtil.valueOf(map.get("customLevel")));
+			userTrip.setTriptimeout(StringUtil.valueOf(map.get("triptimeout")));
 			if (handleType==HandleType.save) {
 				//添加提醒任务
-				if (StringUtil.hashText(userTrip.getVisitTime()) && userTrip.getIsWarn()==1) {
-					
+				if (userTrip.getIsWarn()==1) {
+					UserTripJobUitl.addOrUpdateJob(userTrip,"userTrip");
 				}
 			}
-			if (handleType==HandleType.update) {
-				if (StringUtil.hashText(userTrip.getVisitTime())) {
-					
-				}
+			if (handleType==HandleType.update && userTripParam.getIsVisitTimeUpdate()) {
+				UserTripJobUitl.addOrUpdateJob(userTrip,"userTrip");
 			}
 		}
 		if (entity instanceof GroupTrip) {
 			GroupTrip groupTrip = (GroupTrip) result.getData();
+			GroupTrip userTripParam=(GroupTrip) entity;
+			if (handleType==HandleType.save) {
+				//添加提醒任务
+				if (groupTrip.getIsWarn()==1) {
+					UserTripJobUitl.addOrUpdateJob(groupTrip,"groupTrip");
+				}
+			}
+			if (handleType==HandleType.update && userTripParam.getIsVisitTimeUpdate()) {
+				UserTripJobUitl.addOrUpdateJob(groupTrip,"groupTrip");
+			}
 			Object ids=groupTrip.getTripUsers();
 			if (StringUtil.hashText(ids)) {
 				List<Map<String, Object>> listMap = baseDao.getListMaps("select id,name,tel,imgurl from user where id "+SqlUtil.inSqlStr(ids.toString()));

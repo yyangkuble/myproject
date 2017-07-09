@@ -264,4 +264,34 @@ public class JavaTest {
 		String body = TestUtil.aesTest("selectList/myAnswerAskList", map);
 		System.out.println(body);
 	}
+	
+	@Test
+	public void saveuserTrip() throws Exception {
+		Map<String, String> map=new HashMap<>();
+		map.put("isWarn", "1");
+		map.put("state", "1");
+		map.put("visitTime", "2017-07-09 22:36");
+		map.put("visitType", "营销");
+		map.put("visitProject", "增员");
+		map.put("visitCustomId", "201706221835388470");
+		map.put("userId", "201706091815124190");
+		//map.put("id", "201707081632213320");
+		String body = TestUtil.aesTest("save/UserTrip", map);
+		System.out.println(body);
+	}
+	@Test
+	public void savegroupTrip() throws Exception {
+		Map<String, String> map=new HashMap<>();
+		map.put("isWarn", "1");
+		map.put("groupId", "10022");
+		map.put("startTime", "2017-07-08 23:36");
+		map.put("endTime", "2017-09-20 15:01");
+		map.put("tripType", "产说会");
+		map.put("tripUsers", "201706061110592710,201706082229201860,201706091111304030,201706121129530820");
+		map.put("context", "test");
+		map.put("tile", "Tuttydfgf1024");
+		//map.put("id", "201707081632213320");
+		String body = TestUtil.aesTest("save/GroupTrip", map);
+		System.out.println(body);
+	}
 }

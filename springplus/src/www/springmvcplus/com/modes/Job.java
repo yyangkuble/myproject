@@ -21,7 +21,16 @@ public class Job {
 	String userId;
 	String serviceId;//业务id
 	String serviceType;//userTrip:用户行程
+	String servicetime;//业务行程的时间
 	
+	
+	
+	public String getServicetime() {
+		return servicetime;
+	}
+	public void setServicetime(String servicetime) {
+		this.servicetime = servicetime;
+	}
 	public String getUserId() {
 		return userId;
 	}

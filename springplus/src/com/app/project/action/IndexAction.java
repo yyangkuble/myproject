@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.alibaba.fastjson.JSON;
 import com.app.project.mode.Menu;
 import com.app.project.mode.User;
+import com.app.project.mode.UserImgsShare;
 
 import www.springmvcplus.com.services.LogManager;
 import www.springmvcplus.com.services.service.MyService;
@@ -37,15 +38,47 @@ public class IndexAction {
 		request.setAttribute("user", user);
 		return "askfriend";
 	}
+	@RequestMapping("/share/{id}")
+	public String share(HttpServletRequest request,@PathVariable("id") String shareId) {
+		UserImgsShare userImgsShare = myService.getModel("select * from UserImgsShare where id='"+shareId+"'", UserImgsShare.class);
+		request.setAttribute("share", userImgsShare);
+		return "share";
+	}
 	
 	@RequestMapping("/")
+	public String index(HttpServletRequest request,HttpServletResponse response) {
+		String s1=request.getHeader("user-agent");
+		if(s1.contains("Android") || s1.contains("iPhone") || s1.contains("iPad")) {
+			if (s1.contains("Android")) {
+				request.setAttribute("type", "Android");
+			}else {
+				request.setAttribute("type", "ios");
+			}
+			return "mobileindex";
+		} else {
+			return "pcindex";
+		}
+	}
+	@RequestMapping("/download/app")
+	public String downloadapp(HttpServletRequest request) {
+		String s1=request.getHeader("user-agent");
+		if (s1.contains("Android")) {
+			request.setAttribute("type", "android");
+		}else {
+			request.setAttribute("type", "ios");
+		}
+		String url = myService.getSingleResult("select * from appurl where type = '"+request.getAttribute("type")+"'");
+		return "redirect:"+url;
+	}
+	
+	/*@RequestMapping("/")
 	public String index(HttpServletRequest request) {
 		List<Map<String, Object>> listMaps = myService.getListMaps("SELECT CONCAT('drop table ',table_name,';') as sqls FROM information_schema.`TABLES` WHERE table_schema='test'");
 		for (Map<String, Object> map : listMaps) {
 			System.out.println(map.get("sqls"));
 		}
 		return "redirect:main";
-	}
+	}*/
 	@RequestMapping("/main")
 	public String main(HttpServletRequest request ,HttpServletResponse response) {
 		User user=(User)request.getSession().getAttribute("user");
