@@ -82,7 +82,7 @@ public class UpdateAndInsertAndDeleteIntecept {
 		if (entity instanceof GroupJournalComment) {
 			GroupJournalComment groupJournalComment = (GroupJournalComment) entity;
 			if (groupJournalComment.getContext().equals("_Fabulous_")) {//判断是否重复点赞
-				String singleResult = baseDao.getSingleResult("select count(*) from where journalId='"+groupJournalComment.getJournalId()+"' and userId='"+groupJournalComment.getUserId()+"'");
+				String singleResult = baseDao.getSingleResult("select count(*) from GroupJournalComment where journalId='"+groupJournalComment.getJournalId()+"' and userId='"+groupJournalComment.getUserId()+"' and context ='_Fabulous_'");
 				if (Integer.valueOf(singleResult) >0) {
 					result.setErrorCode(1);
 					result.setErrorMessage("重复点赞");
