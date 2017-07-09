@@ -48,6 +48,18 @@ public class IndexAction {
 	@RequestMapping("/")
 	public String index(HttpServletRequest request,HttpServletResponse response) {
 		String s1=request.getHeader("user-agent");
+		String iosurl="";
+		String androidurl="";
+		List<Map<String, Object>> listMaps = myService.getListMaps("select * from appurl");
+		for (Map<String, Object> map : listMaps) {
+			if (map.get("type").equals("ios")) {
+				iosurl=StringUtil.valueOf(map.get("url"));
+			}else {
+				androidurl=StringUtil.valueOf(map.get("url"));
+			}
+		}
+		request.setAttribute("iosurl", iosurl);
+		request.setAttribute("androidurl", androidurl);
 		if(s1.contains("Android") || s1.contains("iPhone") || s1.contains("iPad")) {
 			if (s1.contains("Android")) {
 				request.setAttribute("type", "Android");
@@ -56,18 +68,6 @@ public class IndexAction {
 			}
 			return "mobileindex";
 		} else {
-			String iosurl="";
-			String androidurl="";
-			List<Map<String, Object>> listMaps = myService.getListMaps("select * from appurl");
-			for (Map<String, Object> map : listMaps) {
-				if (map.get("type").equals("ios")) {
-					iosurl=StringUtil.valueOf(map.get("url"));
-				}else {
-					androidurl=StringUtil.valueOf(map.get("url"));
-				}
-			}
-			request.setAttribute("iosurl", iosurl);
-			request.setAttribute("androidurl", androidurl);
 			return "pcindex";
 		}
 	}

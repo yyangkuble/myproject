@@ -44,11 +44,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		        	<%
 		        		if(request.getAttribute("type").equals("ios")){
 		        	%>
-		        	<div class="imgall" style="background-image: url('resource/imgs/baoxian/www/17.png');width: 70%; margin-left: 15%;height: 50px;margin-top: 500px;"></div>
+		        	<div class="imgall" style="background-image: url('resource/imgs/baoxian/www/17.png');width: 70%; margin-left: 15%;height: 50px;margin-top: 500px;" onclick="iosdownload()"></div>
 		        	<%		
 		        		}else{//andriod
         			%>
-		        	<div class="imgall" style="background-image: url('resource/imgs/baoxian/www/18.png');width: 70%; margin-left: 15%;height: 50px;margin-top: 500px;"></div>
+		        	<div class="imgall" style="background-image: url('resource/imgs/baoxian/www/18.png');width: 70%; margin-left: 15%;height: 50px;margin-top: 500px;" onclick="androiddownload()"></div>
 		        	<%		
 		        		}
 		        	%>
@@ -59,11 +59,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		        	<%
 		        		if(request.getAttribute("type").equals("ios")){
 		        	%>
-		        	<div class="imgall" style="background-image: url('resource/imgs/baoxian/www/17.png');width: 70%; margin-left: 15%;height: 50px;margin-top: 500px;"></div>
+		        	<div class="imgall" style="background-image: url('resource/imgs/baoxian/www/17.png');width: 70%; margin-left: 15%;height: 50px;margin-top: 500px;" onclick="iosdownload()"></div>
 		        	<%		
 		        		}else{//andriod
         			%>
-		        	<div class="imgall" style="background-image: url('resource/imgs/baoxian/www/18.png');width: 70%; margin-left: 15%;height: 50px;margin-top: 500px;"></div>
+		        	<div class="imgall" style="background-image: url('resource/imgs/baoxian/www/18.png');width: 70%; margin-left: 15%;height: 50px;margin-top: 500px;" onclick="androiddownload()"></div>
 		        	<%		
 		        		}
 		        	%>
@@ -75,7 +75,27 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script type="text/javascript">
 	 	var mySwiper = new Swiper ('.swiper-container', {
 		    loop: false
-		  })
+		  });
+	 	
+	 	var iosurl="${iosurl}";
+		var androidurl="${androidurl}";
+		function iosdownload(){
+			window.open(iosurl, "_blank");
+		}
+		function androiddownload(){
+			downloadfile(androidurl);
+		}
+	
+		function downloadfile(fileurl){
+			if(new RegExp("^<").test(fileurl)){
+				fileurl=$(fileurl).text();
+			}
+			if(new RegExp("^http").test(fileurl)){
+				$("body").append('<iframe style="display: none;" src="'+fileurl+'"></iframe>');
+			}else{
+				$("body").append('<iframe style="display: none;" src="'+fileRootUrl+fileurl+'"></iframe>');
+			}
+		}
 	</script>
   </body>
 </html>
