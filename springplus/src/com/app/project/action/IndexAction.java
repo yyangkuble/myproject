@@ -56,6 +56,18 @@ public class IndexAction {
 			}
 			return "mobileindex";
 		} else {
+			String iosurl="";
+			String androidurl="";
+			List<Map<String, Object>> listMaps = myService.getListMaps("select * from appurl");
+			for (Map<String, Object> map : listMaps) {
+				if (map.get("type").equals("ios")) {
+					iosurl=StringUtil.valueOf(map.get("url"));
+				}else {
+					androidurl=StringUtil.valueOf(map.get("url"));
+				}
+			}
+			request.setAttribute("iosurl", iosurl);
+			request.setAttribute("androidurl", androidurl);
 			return "pcindex";
 		}
 	}

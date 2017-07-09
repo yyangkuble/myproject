@@ -58,8 +58,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
    				<div class="ub" style="margin-top: 34px;">
    					<div class="ub-f1">
    						<div class="ub" style="margin-top: 80px;">
-   							<div><img alt="" src="resource/imgs/baoxian/www/03.png" style="height: 50px;"></div>
-   							<div style="margin-left: 50px;"><img alt="" src="resource/imgs/baoxian/www/02.png" style="height: 50px;"></div>
+   							<div><img alt="" src="resource/imgs/baoxian/www/03.png" style="height: 50px;cursor: pointer;" onclick="iosdownload()"></div>
+   							<div style="margin-left: 50px;"><img onclick="androiddownload()" alt="" src="resource/imgs/baoxian/www/02.png" style="height: 50px;cursor: pointer;"></div>
    						</div>
    						<div style="margin-top: 50px;">
    							<img alt="" src="resource/imgs/baoxian/www/erweima.png" style="border-radius:5px;margin-left: 165px;">
@@ -123,10 +123,29 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
    			</div>
    		</div>
    	</div>
+   	
    	<script type="text/javascript" src="resource/js/hide-address-bar.js"></script>
    	<script type="text/javascript" src="resource/js/jquery-1.11.3.min.js"></script>
 	<script type="text/javascript">
-		
+		var iosurl="${iosurl}";
+		var androidurl="${androidurl}";
+		function iosdownload(){
+			window.open(iosurl, "_blank");
+		}
+		function androiddownload(){
+			downloadfile(androidurl);
+		}
+	
+		function downloadfile(fileurl){
+			if(new RegExp("^<").test(fileurl)){
+				fileurl=$(fileurl).text();
+			}
+			if(new RegExp("^http").test(fileurl)){
+				$("body").append('<iframe style="display: none;" src="'+fileurl+'"></iframe>');
+			}else{
+				$("body").append('<iframe style="display: none;" src="'+fileRootUrl+fileurl+'"></iframe>');
+			}
+		}
 	</script>
   </body>
 </html>
