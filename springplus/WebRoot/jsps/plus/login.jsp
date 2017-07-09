@@ -76,20 +76,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	function login(){
 		var formObj=checkForm("form");
 		formObj["log"]="登陆系统";
-		post("user/login",formObj,function(data){
-			if(data==1){
-				$("input[name='password']").val("");
-				alert("密码错误,请重新输入");
-			}else if(data==0){
-				$("input[name='username']").val("");
-				alert("用户名不存在,请检查");
-			}else if(data["errormessage"]=="验证码不正确"){
-				alert(data["errormessage"]);
+		post("user/loginpc",formObj,function(data){
+			var errorCode=data["errorCode"];
+			var errorMessage=data["errorMessage"];
+			if(errorCode==1){
+				alert(errorMessage);
 			}else{
-				setCookie("username",data["username"]);
+				data=data["data"];
+				setCookie("username",data["tel"]);
 				setCookie("password",data["password"]);
 				setCookie("user",JSON.stringify(data));
-				window.location.href="";
+				window.location.href="<%= request.getContextPath() %>/main";
 			}
 		},"json");
 	}
@@ -101,17 +98,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <body class="ymiddle xcenter">
 	<form id="form" action="login" method="post">
 	 <div class="login" style="width: 940px;height: 778px;margin: 0 auto;" >
-	 	<span style="position: absolute;margin-left: 360px; margin-top: 40px;font-size: 30px;" >Spring MVC Plus</span>
+	 	<span style="position: absolute;margin-left: 410px; margin-top: 40px;font-size: 30px;" >保险智库</span>
         <div class="login-screen">
         
           <div class="login-icon">
             <img src="resource/Flat-UI-master/img/login/icon.png" alt="Welcome to Mail App" />
-            <h4>version<small>5.12 Final</small></h4> 
+            <h4>version<small>1.00 Final</small></h4> 
           </div>
 
           <div class="login-form">
             <div class="form-group">
-              <input type="text" id="username" name="username" class="form-control login-field" value="" placeholder="请输入用户名" title="用户名" />
+              <input type="text" id="username" name="username" class="form-control login-field" value="" placeholder="请输入电话" title="电话" />
               <label class="login-field-icon fui-user" for="login-name"></label>
             </div>
 
@@ -124,7 +121,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
               <label class="login-field-icon"><img id="Verification_Code_image" alt="" style="height: 38px;margin-top: -5px;" onclick="updateImg(this)" src="springmvcplus/Verification_Code_image"></label>
             </div>
             <button class="btn btn-primary btn-lg btn-block" type="button" onclick="login()">登&nbsp;录</button>
-            <a class="login-link" href="http://www.springmvcplus.com" target="_blank">任何疑问请登陆www.springmvcplus.com</a>
+            <a class="login-link">任何疑问请登录App联系在线客服</a>
           </div>
         </div>
       </div>

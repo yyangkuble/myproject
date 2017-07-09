@@ -46,7 +46,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
    					</div>
    					<div class="ub-f1"></div>
    					<div class="ymiddle" style="height: 100%;">
-   						<img alt="" src="resource/imgs/baoxian/www/21.png"><span style="cursor: pointer;color: white;margin-left: 8px;">登录</span>
+   						<img alt="" src="resource/imgs/baoxian/www/21.png"><a style="cursor: pointer;color: white;margin-left: 8px;" target="_top" href="plus/login">登录</a>
    					</div>
    				</div>
    			</div>

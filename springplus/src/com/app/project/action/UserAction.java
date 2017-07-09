@@ -79,6 +79,34 @@ public class UserAction {
 			e.printStackTrace();
 		}
 	}
+	
+	@RequestMapping("/loginpc")
+	public void loginpc(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		Map<String, String> parameter=new HashMap<>();
+		parameter.put("tel", request.getParameter("username"));
+		parameter.put("password", request.getParameter("password"));
+		User user = myService.getModelBySqlId("login", parameter, User.class);
+		Result result = new Result();
+		if (user == null) {
+			int telcount = Integer.valueOf(myService.getSingleResultBySqlId("checkTel",parameter));
+			if (telcount == 0) {
+				result.setErrorCode(1);//电话不存在
+				result.setErrorMessage("电话不存在");
+			}else{
+				result.setErrorCode(1);//密码错误
+				result.setErrorMessage("密码错误");
+			}
+		}else {
+			result.setData(user);
+			request.getSession().setAttribute("user", user);
+		}
+		try {
+			response.getWriter().print(MyJSON.toJSONString(result));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	/**
 	 * 注册
 	 * @param request

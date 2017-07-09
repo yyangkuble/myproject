@@ -95,7 +95,7 @@ public class IndexAction {
 	public String main(HttpServletRequest request ,HttpServletResponse response) {
 		User user=(User)request.getSession().getAttribute("user");
 		if (user != null) {
-			List<Menu> menus = myService.getListModels("select * from sys_menu where id in(select distinct d.parentid from sys_user_role b join sys_role_menu c on b.roleid=c.roleid join sys_menu d on c.menuid=d.id where b.userid="+user.getId()+" and d.isused=1) order by orderby", Menu.class);
+			List<Menu> menus = myService.getListModels("select * from sys_menu where id in(select distinct d.parentid from sys_user_role b join sys_role_menu c on b.roleid=c.roleid join sys_menu d on c.menuid=d.id where b.userid='"+user.getId()+"' and d.isused=1) order by orderby", Menu.class);
 			request.setAttribute("menusparent", menus);
 			return "plus/main";
 		}else {
