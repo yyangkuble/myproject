@@ -214,6 +214,10 @@ public class UpdateAndInsertAndDeleteIntecept {
 			UserCarPolicyLog userCarPolicyLog = (UserCarPolicyLog) result.getData();
 			userCarPolicyLog.setCustomName(baseDao.getSingleResult("select name from custom where id ='"+userCarPolicyLog.getCustomId()+"'"));
 			userCarPolicyLog.setCreateTime(userCarPolicyLog.getCreateTime().substring(0, 10));
+			UserCarPolicyLog useCarPolicyLogparam = (UserCarPolicyLog) entity;
+			if (StringUtil.hashText(useCarPolicyLogparam.getImgurl())) {
+				baseDao.update("update custom set imgUrls=imgUrls+',"+useCarPolicyLogparam.getImgurl()+"' where id='"+useCarPolicyLogparam.getCustomId()+"'");
+			}
 		}
 		
 		if (entity instanceof GroupJournal) {
