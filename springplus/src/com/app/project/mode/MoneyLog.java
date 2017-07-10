@@ -20,9 +20,22 @@ public class MoneyLog {
 	String context;//内容
 	String createTime;
 	Double money;
+	String state;//当前状态，，，进行中，已到账
+	String moneyTime;//预计到账时间
 	
 	
-	
+	public String getState() {
+		return state;
+	}
+	public void setState(String state) {
+		this.state = state;
+	}
+	public String getMoneyTime() {
+		return moneyTime;
+	}
+	public void setMoneyTime(String moneyTime) {
+		this.moneyTime = moneyTime;
+	}
 	public Double getMoney() {
 		return money;
 	}

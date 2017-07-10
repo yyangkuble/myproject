@@ -33,6 +33,7 @@ import com.app.project.mode.GroupJournal;
 import com.app.project.mode.GroupJournalComment;
 import com.app.project.mode.GroupNotice;
 import com.app.project.mode.GroupTrip;
+import com.app.project.mode.MoneyLog;
 import com.app.project.mode.NotifyMessage;
 import com.app.project.mode.User;
 import com.app.project.mode.UserCarPolicyLog;
@@ -58,6 +59,22 @@ public class UpdateAndInsertAndDeleteIntecept {
 				field.set(entity, DateUtil.getDate());
 			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				// TODO Auto-generated catch block
+			}
+		}
+		if (entity instanceof MoneyLog) {//体现
+			MoneyLog moneyLog = (MoneyLog) entity;
+			if (handleType== HandleType.save) {
+				//判断现在的金额是否可以体现
+				Double money = Double.valueOf(baseDao.getSingleResult("select money-"+moneyLog.getMoney()+" from user where id='"+moneyLog.getUserId()+"'"));
+				if (money>=0) {//如果剩余余额大于0可以体现
+					moneyLog.setContext("提取"+moneyLog.getMoney()+"元");
+					moneyLog.setMoneyTime(DateUtil.dateFormat(DateUtil.dateMath(new Date(), DateUtil.Date, 1), "yyyy-MM-dd HH:mm:ss"));
+					moneyLog.setState("进行中");
+					moneyLog.setTitle("提取现金");
+				}else {
+					result.setErrorCode(1);
+					result.setErrorMessage("余额不足，不可以体现");
+				}
 			}
 		}
 		if (entity instanceof User && handleType==HandleType.update) {
@@ -187,6 +204,14 @@ public class UpdateAndInsertAndDeleteIntecept {
 	 * @return
 	 */
 	public void saveAndUpdateEnd(Object entity,Result result,HandleType handleType) {
+		//体现
+		if (entity instanceof MoneyLog) {
+			MoneyLog moneyLog =  (MoneyLog) result.getData();
+			if (handleType==HandleType.save) {
+				baseDao.update("update user set money=money-"+moneyLog.getMoney()+" where id='"+moneyLog.getUserId()+"'");
+			}
+		}
+		
 		if (entity instanceof UserImgsShare) {
 			UserImgsShare userImgsShare = (UserImgsShare) result.getData();
 			userImgsShare.setShareUrl("share/"+userImgsShare.getId());
@@ -195,7 +220,6 @@ public class UpdateAndInsertAndDeleteIntecept {
 		if (entity instanceof Answer && handleType == HandleType.save) {
 			Answer answer = (Answer) entity;
 			baseDao.execute("update ask set answerCount=answerCount+1,bestAnswerId='"+baseDao.getSingleResult("select a.id from answer a join user b on a.userId = b.id where a.askId = '"+answer.getAskId()+"' order by b.iszhuanjia desc,a.yesCount desc limit 0,1")+"' where id = '"+answer.getAskId()+"'");
-			
 		}
 		//添加 回答的 评论
 		if (entity instanceof AnswerComments && handleType == HandleType.save) {

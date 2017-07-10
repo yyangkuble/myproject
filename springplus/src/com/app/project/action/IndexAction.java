@@ -19,10 +19,14 @@ import com.alibaba.fastjson.JSON;
 import com.app.project.mode.Menu;
 import com.app.project.mode.User;
 import com.app.project.mode.UserImgsShare;
+import com.app.project.util.Getui;
+import com.app.project.util.Result;
 
 import www.springmvcplus.com.services.LogManager;
 import www.springmvcplus.com.services.service.MyService;
+import www.springmvcplus.com.util.AESUtil;
 import www.springmvcplus.com.util.MyJSON;
+import www.springmvcplus.com.util.ResponseUtil;
 import www.springmvcplus.com.util.StringUtil;
 
 
@@ -133,4 +137,11 @@ public class IndexAction {
 			e.printStackTrace();
 		}
 	}
+	@RequestMapping("/plus/setAlias")
+	public void setAlias(HttpServletRequest request,HttpServletResponse response) {
+		Map<String, String> parameter = AESUtil.converParameter(request);
+		Result setAlias = Getui.setAlias(parameter.get("userId"), parameter.get("cid"));
+		ResponseUtil.print(response, setAlias);
+	}
+	
 }

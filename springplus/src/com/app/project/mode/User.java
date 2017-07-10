@@ -65,9 +65,22 @@ public class User {
 	Integer iszhuanjia;
 	Double money;//金额   最多两位小数点
 	Double historyMoney;//历史红包总金额   最多两位小数点
+	String zhifubao;//支付宝  
+	String realName;//真实名称
 	
 	
-
+	public String getZhifubao() {
+		return zhifubao;
+	}
+	public void setZhifubao(String zhifubao) {
+		this.zhifubao = zhifubao;
+	}
+	public String getRealName() {
+		return realName;
+	}
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
 	public Boolean getIsUpdateTripWarn() {
 		return isUpdateTripWarn;
 	}
