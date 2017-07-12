@@ -2,6 +2,7 @@ package www.springmvcplus.com.modes;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import www.springmvcplus.com.common.ApiDesc;
 import www.springmvcplus.com.common.Generated;
@@ -21,6 +22,7 @@ public class Job {
 	String userId;
 	String serviceId;//业务id
 	String serviceType;//userTrip:用户行程
+	@Transient
 	String servicetime;//业务行程的时间
 	
 	

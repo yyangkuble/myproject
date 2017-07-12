@@ -314,6 +314,9 @@ public class UpdateAndInsertAndDeleteIntecept {
 			if (handleType==HandleType.update && userTripParam.getIsVisitTimeUpdate()) {
 				UserTripJobUitl.addOrUpdateJob(userTrip,"userTrip");
 			}
+			Map<String, String> paramap=new HashMap<>();
+			paramap.put("id", userTrip.getId());
+			result.setData(baseDao.getMapBySqlId("userTripById", paramap));
 		}
 		if (entity instanceof GroupTrip) {
 			GroupTrip groupTrip = (GroupTrip) result.getData();
