@@ -67,7 +67,7 @@ public class Getui {
         APNPayload payload=new APNPayload();
         DictionaryAlertMsg alertMsg=new APNPayload.DictionaryAlertMsg();
         alertMsg.setBody(message);
-        //alertMsg.setTitle(title);
+        alertMsg.setTitle("保险智库");
         payload.setAlertMsg(alertMsg);
         template.setAPNInfo(payload);
         

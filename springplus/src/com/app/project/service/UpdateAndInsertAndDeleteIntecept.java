@@ -229,8 +229,14 @@ public class UpdateAndInsertAndDeleteIntecept {
 		//点赞
 		if (entity instanceof AnswerYes && handleType == HandleType.save) {
 			AnswerYes answer = (AnswerYes) entity;
-			baseDao.execute("update answer set yesCount=yesCount+1 where id = '"+answer.getAnswerId()+"'");
-			baseDao.execute("update ask set allYesCount=allYesCount+1,bestAnswerId='"+baseDao.getSingleResult("select a.id from answer a join user b on a.userId = b.id where a.askId = (select askid from answer where id = '"+answer.getAnswerId()+"') order by b.iszhuanjia desc,a.yesCount desc limit 0,1")+"' where id = (select askid from answer where id = '"+answer.getAnswerId()+"')");
+			Integer count = Integer.valueOf(baseDao.getSingleResult("select count(*) from AnswerYes where answerId='"+answer.getAnswerId()+"' and userId='"+answer.getUserId()+"'"));
+			if (count > 0) {
+				result.setErrorCode(1);
+				result.setErrorMessage("重复点赞");
+			}else {
+				baseDao.execute("update answer set yesCount=yesCount+1 where id = '"+answer.getAnswerId()+"'");
+				baseDao.execute("update ask set allYesCount=allYesCount+1,bestAnswerId='"+baseDao.getSingleResult("select a.id from answer a join user b on a.userId = b.id where a.askId = (select askid from answer where id = '"+answer.getAnswerId()+"') order by b.iszhuanjia desc,a.yesCount desc limit 0,1")+"' where id = (select askid from answer where id = '"+answer.getAnswerId()+"')");
+			}
 		}
 		
 		

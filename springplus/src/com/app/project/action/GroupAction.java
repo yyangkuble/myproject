@@ -19,6 +19,7 @@ import com.app.project.mode.NotifyMessage;
 import com.app.project.mode.TestResultLog;
 import com.app.project.mode.TestResultLogOther;
 import com.app.project.mode.User;
+import com.app.project.util.Getui;
 import com.app.project.util.PublicUtil;
 import com.app.project.util.Result;
 import com.sun.org.apache.bcel.internal.generic.NEW;
@@ -65,7 +66,7 @@ public class GroupAction {
 		NotifyMessage message = new NotifyMessage();
 		message.setImgUrl(myService.getSingleResult("select imgUrl from user where id='"+userId+"'"));
 		message.setIsread(0);
-		message.setNotifyType(1);
+		message.setNotifyType("1");
 		message.setTitle(title);
 		message.setToUserId(myService.getSingleResult("select id from user where groupId="+groupId+" and groupAuth=0"));
 		message.setFromUserId(userId);
@@ -80,6 +81,7 @@ public class GroupAction {
 			result.setErrorMessage("已经添加过");
 		}else {
 			int save = myService.save(message);
+			Getui.sendMessage(message.getToUserId(), message.getTitle());
 			if (save ==0) {
 				result.setErrorCode(0);
 				result.setErrorMessage("系统故障");
@@ -101,6 +103,7 @@ public class GroupAction {
 			result.setErrorMessage("系统发生错误");
 		}else {
 			Map<String, Object> map = myService.getMap("select * from user where id = '"+userId+"'");
+			Getui.sendMessage(userId, "您已经被移除组");
 			map.remove("password");
 			result.setData(map);
 		}

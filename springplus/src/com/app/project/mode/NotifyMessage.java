@@ -21,7 +21,7 @@ public class NotifyMessage {
 	@ApiDesc("详情")
 	String context;
 	@ApiDesc("通知类型  1： 加入团队申请 2：日志评论  3：点赞  4：课程更新  5：大咖回答提问  6：拒绝加入团队提醒  7:已同意加入团队申请")
-	Integer notifyType;
+	String notifyType;
 	@ApiDesc("需要时使用，保存点击通知需要的数据")
 	String jsonData;
 	@ApiDesc("触发通知的用户id")
@@ -56,10 +56,11 @@ public class NotifyMessage {
 	public void setContext(String context) {
 		this.context = context;
 	}
-	public Integer getNotifyType() {
+	
+	public String getNotifyType() {
 		return notifyType;
 	}
-	public void setNotifyType(Integer notifyType) {
+	public void setNotifyType(String notifyType) {
 		this.notifyType = notifyType;
 	}
 	public String getJsonData() {
