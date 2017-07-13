@@ -11,6 +11,7 @@ public class PayRequest {
 		String path = request.getContextPath();
 		String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 		this.notify_url=basePath+this.notify_url;
+		
 	}
 	
 	String app_id;
