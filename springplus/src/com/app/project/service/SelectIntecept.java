@@ -111,6 +111,24 @@ public class SelectIntecept {
 				}
 			}
 		}
+		if (sqlId.equals("selectUserByTel")) {
+			mapResult=(Map<String, Object>) listOrMap;
+			if (! StringUtil.hashText(mapResult.get("zhifubao"))) {
+				mapResult.put("zhifubao", "");
+				mapResult.put("realName", "");
+			}
+		}
+		
+		if (sqlId.equals("plancustomlist")) {
+			listResult=(List<Map<String, Object>>) listOrMap;
+			for (Map<String, Object> map : listResult) {
+				Object idtype = map.get("idtype");
+				if (idtype.equals("trip")) {
+					List<Map<String, Object>> listMaps = baseDao.getListMaps("select visitDate,visitProject from usertrip where visitCustomId='"+map.get("customid")+"' and a.state=1 and left(a.visittime,7)='"+map.get("tripdate")+"' order by visitTime desc");
+					map.put("customTrip", listMaps);
+				}
+			}
+		}
 		
 	}
 	

@@ -68,6 +68,10 @@ public class UserAction {
 				Group group = myService.getModel("select * from group_ where id = "+user.getGroupId(),Group.class);
 				user.setRongCloudGroupId(group.getRongCloudGroupId());
 				user.setGroupName(group.getGroupName());
+				if (!StringUtil.hashText(user.getZhifubao())) {
+					user.setZhifubao("");
+					user.setRealName("");
+				}
 			}
 			user.setUserLevel(1);
 			result.setData(user);

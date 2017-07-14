@@ -14,7 +14,7 @@ public class PayRequest {
 		
 	}
 	
-	String app_id;
+	String app_id="2017071407748745";
 	String method="alipay.trade.app.pay";
 	String charset="UTF-8";
 	String sign_type="RSA2";

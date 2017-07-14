@@ -61,7 +61,7 @@ order by visitCustomId,visitTime
 	</sql>
 	<!-- 获取测试结果记录 -->
 	<sql id="selectTestLogs">
-		select a.testTime,a.testedName,a.score,b.name as testerName from test_resultlog a,user b where a.testerUserId = b.id 
+		select a.id,a.testTime,a.testedName,a.score,b.name as testerName from test_resultlog a,user b where a.testerUserId = b.id 
 		<if if="testedName != null">
 			and a.testedName like '%${testedName}%'
 		</if>

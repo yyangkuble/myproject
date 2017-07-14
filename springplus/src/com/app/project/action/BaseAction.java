@@ -318,6 +318,31 @@ public class BaseAction {
 		ResponseUtil.print(response, new Result(renCaiPools));
 	}
 	
+	
+	@RequestMapping("/getMarkById")
+	public void getMarkById(HttpServletRequest request,HttpServletResponse response) {
+		Map<String, String> map = AESUtil.converParameter(request);
+		String id = map.get("id");
+		TestResultLog resultLog=myService.getModel("select * from Test_ResultLog where id='"+id+"'", TestResultLog.class);
+		
+		List<TestResultLogOther> testResultLogOthers=myService.getListModels("select * from test_resultlogother where resultLogId = '"+resultLog.getId()+"' order by orderby", TestResultLogOther.class);
+		resultLog.setList(testResultLogOthers);
+		
+		if (resultLog.getScore() <= 13) {
+			resultLog.setComment("未觉醒的人才");
+		}else if (resultLog.getScore()>=14 && resultLog.getScore()<=17) {
+			resultLog.setComment("可造之才");
+		}else if (resultLog.getScore()>=18 && resultLog.getScore()<=19) {
+			resultLog.setComment("业务高手");
+		}else if (resultLog.getScore()>=20 && resultLog.getScore()<=22) {
+			resultLog.setComment("天生好手");
+		}else {
+			resultLog.setComment("万中选一");
+		}
+		System.out.println(JSON.toJSON(resultLog));
+		ResponseUtil.print(response, resultLog);
+	}
+	
 	/**
 	 * 
 	 * @param request
@@ -433,6 +458,8 @@ public class BaseAction {
 		List<Map<String, Object>> longVisit = myService.getListMapsBySqlId("proposalVisitCustom", map);
 		map.put("type", "custionData");
 		List<Map<String, Object>> custionData = myService.getListMapsBySqlId("proposalVisitCustom", map);
+		map.put("type", "plan");
+		List<Map<String, Object>> plan = myService.getListMapsBySqlId("proposalVisitCustom", map);
 		
 		secretaryRemind.put("birthay", birthay);
 		secretaryRemind.put("healthy", healthy);
@@ -440,6 +467,7 @@ public class BaseAction {
 		secretaryRemind.put("family", family);
 		secretaryRemind.put("longVisit", longVisit);
 		secretaryRemind.put("custionData", custionData);
+		secretaryRemind.put("plan", plan);
 		System.out.println(secretaryRemind);
 		ResponseUtil.print(response, secretaryRemind);
 	}

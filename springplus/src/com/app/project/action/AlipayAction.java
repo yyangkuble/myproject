@@ -1,6 +1,8 @@
 package com.app.project.action;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -18,26 +20,56 @@ import www.springmvcplus.com.util.AESUtil;
 import www.springmvcplus.com.util.DateUtil;
 import www.springmvcplus.com.util.IdManage;
 import www.springmvcplus.com.util.ResponseUtil;
-import www.springmvcplus.com.util.system.JsoupUtil;
 
-import com.alipay.api.AlipayRequest;
+import com.alibaba.fastjson.JSON;
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayTradeAppPayModel;
+import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.app.project.mode.AlipayParameter;
 import com.app.project.mode.UserPayLog;
 import com.app.project.mode.WeiXinParameter;
 import com.app.project.pay.PayBizInfo;
 import com.app.project.pay.PayRequest;
+import com.app.project.util.Result;
 
 @Controller
 @RequestMapping("/pay")
 public class AlipayAction {
+	private String alipayAppId="2017071407748745";
+    private String alipayPrivateKey="MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCJWt7bv3dG+F69WilkZyeRt9BXbFNpKnVhRv2eIKc29Nt4+fNC/jACrbYiA94SZQEa7Spdu6+sK7M7DbH2r+9BdVvqffPQpfRGcS1MmkKih12PHGSkrZ5PpbynEbZQrlbIijp+pyhBw4rc0KESXDIC7PjLgCxI0HRE45gT+7Km31YWpyGGDreXePPBv8q1AAJorDa0gcLOPg3qAz+X1koTFDBG900FHB+Pmh3ZaVINUospXWxqJq8etXIK7azpnCfHsvS9t5DtqReAzir8+0/aFH+n45kO8seVrImLbbne0PJSIv9Yd805dqt4gW1L+zaBfPYsV80O7fdCFBydiWV1AgMBAAECggEAIqPYMHNJEYzx1681YSzivc0trd6T6qHamH3e2FJD2YhHEWt3/h083nAQzuNKzjjK3o+Rb7I1y6X5vZrmluAn5spCNBEvvB8eS+WfFwKQa4zX+4+dkip3En8p5LiC0jYljM3PksF1VaCLFMVI2eiGdFZvKGNax8JKkFUVtXR0ycCJVSjThhmFfJ4gKnGxEswAgUykyHcqCx9HBUnxLuxD7xT4aEjV7tarWa9NWCzkmCMN+DLLYl0YUbDMRw7MIO8WwpC8dpSZMqVDD2mTJFt5SwTJKVSEca58HIJZ0euS7MIweRaqfzDgXcvAuPdj3lEnhCHsJEDeORG4nZJd9hSowQKBgQDfxP3lxpGT6BowGwqcZFXwb5kSUIaXCSsSDCEnmAKXxlO2sXZLgT9v00ItD7q1/YOiKZJnB5OFCPTw86Jed3O6CcAZhcv8/F0M+Qa6EfcRZvb7UmKi0LWCbxuzJX95orUl3VmtgIPq3ySAsO275VVAW5yp7Ge9h1nypEZiJk93uwKBgQCdI4hi66WaS/AJpu1CEkIug6a/8YzZ9AQU03WyAdlaJbS2GFWqKbUf/ljSr4CQlYN6S9zPCDyCVA/Wtzcu+gnT0aiGWZuI7Rugo1bj8H13Ga5tkEYDxv3cpbji+I7DsvvfXSH8AaiNnkjF1865PizvIIaVA4P40uq6xsWelC5MjwKBgQCEC4nL2pYzUoaJlpt3WBoCbMhGL3CMleNtney+oYv+JhFmQGhO+/EEOwTU9HA4TmYr/h4fYDAkE/n+abaJyjFnObO7G+IY4o7CRf07Nbi28yyRd7cu3rwNQSV2XI1RqLr+ohT2Nl0h7xVqP326IAVjmevjtdYt2D4y2c+SwYqpWwKBgFVDOnWyNyEJoy0ZjhMTpSVn+cqcXjjE1pIWSv5TUoQ/gVZszc6O4uCBOeDXqYLKHZT2JNGRPoPY6N8wepjawwpT8IU1idc6EIuRFUyI6Qr+vE5mwha6mnRm13MQOyakr1X7Sr1aiQKOqB3xgxGwUuFNXLjuN2WDzCmcQQ5SiOyxAoGAOCzWrM5FoKbD//yW0hRfuUb8/mJGkkO8469jj3lqr4Ty5splFs/IQkjMtWqiQySTeVCIm5jp+/UDH0L2DeD0ZE9fznTwrajIS/pgE/0vo0kTa9JZMvikdNWNAENrRZ9+NjBbYY1aoWG/IsEKfJ7WK03mNX2/VnKkXtQQtvK06c8=";
+    private String alipayPublicKey="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiVre2793RvhevVopZGcnkbfQV2xTaSp1YUb9niCnNvTbePnzQv4wAq22IgPeEmUBGu0qXbuvrCuzOw2x9q/vQXVb6n3z0KX0RnEtTJpCooddjxxkpK2eT6W8pxG2UK5WyIo6fqcoQcOK3NChElwyAuz4y4AsSNB0ROOYE/uypt9WFqchhg63l3jzwb/KtQACaKw2tIHCzj4N6gM/l9ZKExQwRvdNBRwfj5od2WlSDVKLKV1saiavHrVyCu2s6Zwnx7L0vbeQ7akXgM4q/PtP2hR/p+OZDvLHlayJi2253tDyUiL/WHfNOXareIFtS/s2gXz2LFfNDu33QhQcnYlldQIDAQAB";
 	
 	@Resource
 	MyService myService;
 	//支付宝返回通知
 	@RequestMapping("/alipay")
-	public void alipayReturnUrl(AlipayParameter alipayParameter,HttpServletResponse response) {
-		myService.save(alipayParameter);
-		ResponseUtil.print(response, alipayParameter);
+	public void alipayReturnUrl(HttpServletRequest request,HttpServletResponse response) throws AlipayApiException, IOException {
+		//获取支付宝POST过来反馈信息
+		Map<String,String> params = new HashMap<String,String>();
+		Map requestParams = request.getParameterMap();
+		for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
+		    String name = (String) iter.next();
+		    String[] values = (String[]) requestParams.get(name);
+		    String valueStr = "";
+		    for (int i = 0; i < values.length; i++) {
+		        valueStr = (i == values.length - 1) ? valueStr + values[i]
+		                    : valueStr + values[i] + ",";
+		  }
+		  //乱码解决，这段代码在出现乱码时使用。
+		  //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+		  params.put(name, valueStr);
+		 }
+		//切记alipaypublickey是支付宝的公钥，请去open.alipay.com对应应用下查看。
+		//boolean AlipaySignature.rsaCheckV1(Map<String, String> params, String publicKey, String charset, String sign_type)
+		boolean flag = AlipaySignature.rsaCheckV1(params, alipayPublicKey, "UTF-8", "RSA2");
+		if (flag==true) {
+			System.out.println(JSON.toJSONString(params));
+		}
+		response.getWriter().print(flag);
 	}
 	//微信返回通知
 	@RequestMapping("/weixin")
@@ -45,6 +77,11 @@ public class AlipayAction {
 		myService.save(weiXinParameter);
 		response.getWriter().print("<xml><return_code><![CDATA["+weiXinParameter.getReturn_code()+"]]></return_code><return_msg><![CDATA["+weiXinParameter.getReturn_msg()+"]]></return_msg></xml>");
 	}
+	
+	public void name() {
+		
+	}
+	
 	/**
 	 * 获取签名的商品信息
 	 * @param request
@@ -111,7 +148,6 @@ public class AlipayAction {
 			Document document = connect.post();
 			System.out.println(document.text());
 		}else {
-			PayRequest payRequest=new PayRequest(request);
 			PayBizInfo payBizInfo=new PayBizInfo();
 			UserPayLog userPayLog = new UserPayLog();
 			if (payType.equals("1")) {//vip
@@ -132,17 +168,46 @@ public class AlipayAction {
 				payBizInfo.setTotal_amount("0.01");
 				userPayLog.setBiz_id(biz_id);
 			}
-			userPayLog.setId(payBizInfo.getOut_trade_no());
-			userPayLog.setTitle(payBizInfo.getSubjec());
-			userPayLog.setContext(payBizInfo.getBody());
-			userPayLog.setPayMoney(payBizInfo.getTotal_amount());
-			userPayLog.setBiz_type(payType);
-			userPayLog.setUserId(userId);
-			userPayLog.setPayState(0);
-			userPayLog.setPayTime(payRequest.getTimestamp());
-			myService.save(userPayLog);
-			payRequest.setBiz_content(payBizInfo);
-			ResponseUtil.print(response, payRequest);
+			//实例化客户端
+			AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", alipayAppId, alipayPrivateKey, "json", "UTF-8", alipayPublicKey, "RSA2");
+			//实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+			AlipayTradeAppPayRequest alipayRequest = new AlipayTradeAppPayRequest();
+			//SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
+			AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
+			model.setBody(payBizInfo.getBody());
+			model.setSubject(payBizInfo.getSubjec());
+			model.setOutTradeNo(payBizInfo.getOut_trade_no());
+			model.setTotalAmount(payBizInfo.getTotal_amount());
+			model.setProductCode("QUICK_MSECURITY_PAY");
+			alipayRequest.setBizModel(model);
+			String path = request.getContextPath();
+			String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+			alipayRequest.setNotifyUrl(basePath+"pay/alipay");
+			Map<String, Object> mapresult=new HashMap<String, Object>();
+			Result result = new Result();
+			try {
+			        //这里和普通的接口调用不同，使用的是sdkExecute
+			        AlipayTradeAppPayResponse alipayResponse = alipayClient.sdkExecute(alipayRequest);
+			        System.out.println(alipayResponse.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
+			        mapresult.put("payparam", alipayResponse.getBody());
+			        mapresult.put("orderId", payBizInfo.getOut_trade_no());
+			        //添加数据库
+			        userPayLog.setId(payBizInfo.getOut_trade_no());
+					userPayLog.setTitle(payBizInfo.getSubjec());
+					userPayLog.setContext(payBizInfo.getBody());
+					userPayLog.setPayMoney(payBizInfo.getTotal_amount());
+					userPayLog.setBiz_type(payType);
+					userPayLog.setUserId(userId);
+					userPayLog.setPayState(0);
+					userPayLog.setPayTime(DateUtil.getDate());
+					myService.save(userPayLog);
+			    } catch (AlipayApiException e) {
+			        e.printStackTrace();
+			        result.setErrorCode(1);
+			        result.setErrorMessage("支付宝出现了错误");
+			}
+			
+			ResponseUtil.print(response, result);
 		}
 	}
 	

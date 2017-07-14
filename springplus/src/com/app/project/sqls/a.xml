@@ -41,9 +41,85 @@
 			}else if(type=='custionData'){
 				<!-- 资料收集 -->
 				<text>select * from custom where birthDay is null or birthDay ='' and userid = #{userId}</text>
+			}else if(type=='plan'){
+				<!-- 资料收集 -->
+				<text>
+					select aaa.*,bbb.name from(
+					select 
+					case when usertripid is null then 'plan' else 'trip' end as idtype,
+					case when usertripid is null then customid else visitcustomid end as customid
+					 from(
+					(select distinct a.id as usertripId,a.visitCustomId from usertrip a  where a.userid=#{userId} and a.state=1 and left(a.visittime,7)=left(now(),7)) aa 
+					left join 
+					(select id as planid ,customId from userplan  where userid=#{userId} and plandate =left(now(),7)) bb
+					on aa.visitCustomId=bb.customId
+					)
+					UNION 
+					select 
+					case when usertripid is null then 'plan' else 'trip' end as idtype,
+					case when usertripid is null then customid else visitcustomid end as customid
+					 from(
+					(select distinct a.id as usertripId,a.visitCustomId from usertrip a  where a.userid=#{userId} and a.state=1 and left(a.visittime,7)=left(now(),7)) aa 
+					right join 
+					(select id as planid ,customId from userplan  where userid=#{userId} and plandate =left(now(),7)) bb
+					on aa.visitCustomId=bb.customId
+					)
+					) aaa join custom bbb on aaa.customid=bbb.id
+				</text>
 			}
 		</script>
 		
 	</sql>
+	<sql id="plancustomlist">
+		select aaa.*,bbb.name,bbb.level from(
+		select 
+		case when usertripid is null then 'plan' else 'trip' end as idtype,
+		case when usertripid is null then plandate else tripDate end as tripdate,
+		case when usertripid is null then customid else visitcustomid end as customid
+		 from(
+		(select distinct a.id as usertripId,a.visitCustomId,left(a.visitDate,7) as tripDate from usertrip a  where a.userid=#{userId} and a.state=1 and left(a.visittime,7)='${month}') aa 
+		left join 
+		(select id as planid ,customId,plandate from userplan  where userid=#{userId} and plandate ='${month}') bb
+		on aa.visitCustomId=bb.customId
+		)
+		UNION 
+		select 
+		case when usertripid is null then 'plan' else 'trip' end as idtype,
+		case when usertripid is null then plandate else tripDate end as tripdate,
+		case when usertripid is null then customid else visitcustomid end as customid
+		 from(
+		(select distinct a.id as usertripId,a.visitCustomId,left(a.visitDate,7) as tripDate from usertrip a  where a.userid=#{userId} and a.state=1 and left(a.visittime,7)='${month}') aa 
+		right join 
+		(select id as planid ,customId,plandate from userplan  where userid=#{userId} and plandate ='${month}') bb
+		on aa.visitCustomId=bb.customId
+		)
+		) aaa join custom bbb on aaa.customid=bbb.id
+	</sql>
 	
+	<sql id="plancustomcount">
+		select bbb.level,count(bbb.level) as customcount from(
+		select 
+		case when usertripid is null then 'plan' else 'trip' end as idtype,
+		case when usertripid is null then plandate else tripDate end as tripdate,
+		case when usertripid is null then customid else visitcustomid end as customid
+		 from(
+		(select distinct a.id as usertripId,a.visitCustomId,left(a.visitDate,7) as tripDate from usertrip a  where a.userid=#{userId} and a.state=1 and left(a.visittime,7)='${month}') aa 
+		left join 
+		(select id as planid ,customId,plandate from userplan  where userid=#{userId} and plandate ='${month}') bb
+		on aa.visitCustomId=bb.customId
+		)
+		UNION 
+		select 
+		case when usertripid is null then 'plan' else 'trip' end as idtype,
+		case when usertripid is null then plandate else tripDate end as tripdate,
+		case when usertripid is null then customid else visitcustomid end as customid
+		 from(
+		(select distinct a.id as usertripId,a.visitCustomId,left(a.visitDate,7) as tripDate from usertrip a  where a.userid=#{userId} and a.state=1 and left(a.visittime,7)='${month}') aa 
+		right join 
+		(select id as planid ,customId,plandate from userplan  where userid=#{userId} and plandate ='${month}') bb
+		on aa.visitCustomId=bb.customId
+		)
+		) aaa join custom bbb on aaa.customid=bbb.id
+		group by level
+	</sql>
 </sqls>
