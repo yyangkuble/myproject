@@ -40,6 +40,7 @@ import com.app.project.mode.UserCarPolicyLog;
 import com.app.project.mode.UserFriendsAsk;
 import com.app.project.mode.UserImgsShare;
 import com.app.project.mode.UserTrip;
+import com.app.project.util.Getui;
 import com.app.project.util.PublicUtil;
 import com.app.project.util.Result;
 import com.app.project.util.UserTripJobUitl;
@@ -220,6 +221,17 @@ public class UpdateAndInsertAndDeleteIntecept {
 		if (entity instanceof Answer && handleType == HandleType.save) {
 			Answer answer = (Answer) entity;
 			baseDao.execute("update ask set answerCount=answerCount+1,bestAnswerId='"+baseDao.getSingleResult("select a.id from answer a join user b on a.userId = b.id where a.askId = '"+answer.getAskId()+"' order by b.iszhuanjia desc,a.yesCount desc limit 0,1")+"' where id = '"+answer.getAskId()+"'");
+			NotifyMessage notifyMessage=new NotifyMessage();
+			Ask ask=baseDao.getModel("select title from ask where id='"+answer.getAskId()+"'", Ask.class);
+			notifyMessage.setContext(ask.getTitle());
+			User user = baseDao.getModel("select name,imgUrl from user where id='"+answer.getUserId()+"'",User.class);
+			notifyMessage.setTitle(user.getName()+"回答了您的提问");
+			notifyMessage.setFromUserId(answer.getUserId());
+			notifyMessage.setIsread(0);
+			notifyMessage.setNotifyType("4");
+			notifyMessage.setToUserId(ask.getUserId());
+			baseDao.save(notifyMessage);
+			Getui.sendMessage(notifyMessage.getToUserId(), notifyMessage.getTitle());
 		}
 		//添加 回答的 评论
 		if (entity instanceof AnswerComments && handleType == HandleType.save) {
@@ -237,6 +249,21 @@ public class UpdateAndInsertAndDeleteIntecept {
 				baseDao.execute("update answer set yesCount=yesCount+1 where id = '"+answer.getAnswerId()+"'");
 				baseDao.execute("update ask set allYesCount=allYesCount+1,bestAnswerId='"+baseDao.getSingleResult("select a.id from answer a join user b on a.userId = b.id where a.askId = (select askid from answer where id = '"+answer.getAnswerId()+"') order by b.iszhuanjia desc,a.yesCount desc limit 0,1")+"' where id = (select askid from answer where id = '"+answer.getAnswerId()+"')");
 			}
+			NotifyMessage notifyMessage=new NotifyMessage();
+			Answer ask=baseDao.getModel("select * from Answer where id='"+answer.getAnswerId()+"'", Answer.class);
+			if (ask.getAnswerType().equals("text")) {
+				notifyMessage.setContext(ask.getContext());
+			}else {
+				notifyMessage.setContext("语音");
+			}
+			User user = baseDao.getModel("select name,imgUrl from user where id='"+answer.getUserId()+"'",User.class);
+			notifyMessage.setTitle(user.getName()+"给你点了赞");
+			notifyMessage.setFromUserId(answer.getUserId());
+			notifyMessage.setIsread(0);
+			notifyMessage.setNotifyType("3");
+			notifyMessage.setToUserId(ask.getUserId());
+			baseDao.save(notifyMessage);
+			Getui.sendMessage(notifyMessage.getToUserId(), notifyMessage.getTitle());
 		}
 		
 		
@@ -261,6 +288,25 @@ public class UpdateAndInsertAndDeleteIntecept {
 			User user = baseDao.getModel("select b.name,b.imgurl from GroupJournalComment a join user b on a.userId = b.id where a.id='"+groupJournal.getId()+"'",User.class);
 			groupJournal.setUserImgUrl(user.getImgUrl());
 			groupJournal.setUserName(user.getName());
+			
+			NotifyMessage notifyMessage=new NotifyMessage();
+			GroupJournal ask=baseDao.getModel("select * from GroupJournal where id='"+groupJournal.getJournalId()+"'", GroupJournal.class);
+			notifyMessage.setContext(ask.getTitle());
+			User user2 = baseDao.getModel("select name,imgUrl from user where id='"+groupJournal.getUserId()+"'",User.class);
+			if (groupJournal.getContext().equals("_Fabulous_")) {//点赞
+				notifyMessage.setTitle(user2.getName()+"给你点了赞");
+				notifyMessage.setNotifyType("6");
+			}else {
+				notifyMessage.setTitle(user2.getName()+"评论了你的日志");
+				notifyMessage.setNotifyType("2");
+			}
+			notifyMessage.setFromUserId(user2.getId());
+			notifyMessage.setIsread(0);
+			notifyMessage.setToUserId(ask.getUserId());
+			baseDao.save(notifyMessage);
+			Getui.sendMessage(notifyMessage.getToUserId(), notifyMessage.getTitle());
+			
+			
 		}
 		//如果是添加组，成功后自动修改用户的权限和用户组id
 		if (entity instanceof Group  && result != null) {

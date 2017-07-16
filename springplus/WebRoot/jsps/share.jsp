@@ -58,7 +58,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				$("#voiceImg").attr("src","resource/imgs/baoxian/play_0"+imgindex+".png");
 			}, 200);
 			myAuto.onended = function() {
-				alert("dd");
 				clearInterval(timer);
 				imgindex=3;
 				$("#voiceImg").attr("src","resource/imgs/baoxian/play_0"+imgindex+".png");

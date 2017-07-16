@@ -1,9 +1,18 @@
 package com.app.project.action;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +28,8 @@ import www.springmvcplus.com.services.service.MyService;
 import www.springmvcplus.com.util.AESUtil;
 import www.springmvcplus.com.util.DateUtil;
 import www.springmvcplus.com.util.IdManage;
+import www.springmvcplus.com.util.JdomParseXmlUtils;
+import www.springmvcplus.com.util.MD5Util;
 import www.springmvcplus.com.util.ResponseUtil;
 import www.springmvcplus.com.util.StringUtil;
 
@@ -32,6 +43,7 @@ import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.app.project.mode.AlipayParameter;
 import com.app.project.mode.PayAskLog;
+import com.app.project.mode.UnifiedorderResult;
 import com.app.project.mode.User;
 import com.app.project.mode.UserFriendsAsk;
 import com.app.project.mode.UserPayLog;
@@ -39,6 +51,7 @@ import com.app.project.mode.WeiXinParameter;
 import com.app.project.pay.PayBizInfo;
 import com.app.project.pay.PayRequest;
 import com.app.project.util.Result;
+import com.sun.net.ssl.HttpsURLConnection;
 
 @Controller
 @RequestMapping("/pay")
@@ -46,7 +59,10 @@ public class AlipayAction {
 	private String alipayAppId="2017071407748745";
     private String alipayPrivateKey="MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCJWt7bv3dG+F69WilkZyeRt9BXbFNpKnVhRv2eIKc29Nt4+fNC/jACrbYiA94SZQEa7Spdu6+sK7M7DbH2r+9BdVvqffPQpfRGcS1MmkKih12PHGSkrZ5PpbynEbZQrlbIijp+pyhBw4rc0KESXDIC7PjLgCxI0HRE45gT+7Km31YWpyGGDreXePPBv8q1AAJorDa0gcLOPg3qAz+X1koTFDBG900FHB+Pmh3ZaVINUospXWxqJq8etXIK7azpnCfHsvS9t5DtqReAzir8+0/aFH+n45kO8seVrImLbbne0PJSIv9Yd805dqt4gW1L+zaBfPYsV80O7fdCFBydiWV1AgMBAAECggEAIqPYMHNJEYzx1681YSzivc0trd6T6qHamH3e2FJD2YhHEWt3/h083nAQzuNKzjjK3o+Rb7I1y6X5vZrmluAn5spCNBEvvB8eS+WfFwKQa4zX+4+dkip3En8p5LiC0jYljM3PksF1VaCLFMVI2eiGdFZvKGNax8JKkFUVtXR0ycCJVSjThhmFfJ4gKnGxEswAgUykyHcqCx9HBUnxLuxD7xT4aEjV7tarWa9NWCzkmCMN+DLLYl0YUbDMRw7MIO8WwpC8dpSZMqVDD2mTJFt5SwTJKVSEca58HIJZ0euS7MIweRaqfzDgXcvAuPdj3lEnhCHsJEDeORG4nZJd9hSowQKBgQDfxP3lxpGT6BowGwqcZFXwb5kSUIaXCSsSDCEnmAKXxlO2sXZLgT9v00ItD7q1/YOiKZJnB5OFCPTw86Jed3O6CcAZhcv8/F0M+Qa6EfcRZvb7UmKi0LWCbxuzJX95orUl3VmtgIPq3ySAsO275VVAW5yp7Ge9h1nypEZiJk93uwKBgQCdI4hi66WaS/AJpu1CEkIug6a/8YzZ9AQU03WyAdlaJbS2GFWqKbUf/ljSr4CQlYN6S9zPCDyCVA/Wtzcu+gnT0aiGWZuI7Rugo1bj8H13Ga5tkEYDxv3cpbji+I7DsvvfXSH8AaiNnkjF1865PizvIIaVA4P40uq6xsWelC5MjwKBgQCEC4nL2pYzUoaJlpt3WBoCbMhGL3CMleNtney+oYv+JhFmQGhO+/EEOwTU9HA4TmYr/h4fYDAkE/n+abaJyjFnObO7G+IY4o7CRf07Nbi28yyRd7cu3rwNQSV2XI1RqLr+ohT2Nl0h7xVqP326IAVjmevjtdYt2D4y2c+SwYqpWwKBgFVDOnWyNyEJoy0ZjhMTpSVn+cqcXjjE1pIWSv5TUoQ/gVZszc6O4uCBOeDXqYLKHZT2JNGRPoPY6N8wepjawwpT8IU1idc6EIuRFUyI6Qr+vE5mwha6mnRm13MQOyakr1X7Sr1aiQKOqB3xgxGwUuFNXLjuN2WDzCmcQQ5SiOyxAoGAOCzWrM5FoKbD//yW0hRfuUb8/mJGkkO8469jj3lqr4Ty5splFs/IQkjMtWqiQySTeVCIm5jp+/UDH0L2DeD0ZE9fznTwrajIS/pgE/0vo0kTa9JZMvikdNWNAENrRZ9+NjBbYY1aoWG/IsEKfJ7WK03mNX2/VnKkXtQQtvK06c8=";
     private String alipayPublicKey="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiVre2793RvhevVopZGcnkbfQV2xTaSp1YUb9niCnNvTbePnzQv4wAq22IgPeEmUBGu0qXbuvrCuzOw2x9q/vQXVb6n3z0KX0RnEtTJpCooddjxxkpK2eT6W8pxG2UK5WyIo6fqcoQcOK3NChElwyAuz4y4AsSNB0ROOYE/uypt9WFqchhg63l3jzwb/KtQACaKw2tIHCzj4N6gM/l9ZKExQwRvdNBRwfj5od2WlSDVKLKV1saiavHrVyCu2s6Zwnx7L0vbeQ7akXgM4q/PtP2hR/p+OZDvLHlayJi2253tDyUiL/WHfNOXareIFtS/s2gXz2LFfNDu33QhQcnYlldQIDAQAB";
-	
+    private String weixinAppId="2017071407748745";
+    private String weixinMch_id="2017071407748745";//微信商户号
+    private String weixinSpbill_create_ip="39.108.95.173";//用户实际ip地址
+    
 	@Resource
 	MyService myService;
 	//支付宝返回通知
@@ -69,10 +85,10 @@ public class AlipayAction {
 		 }
 		//切记alipaypublickey是支付宝的公钥，请去open.alipay.com对应应用下查看。
 		//boolean AlipaySignature.rsaCheckV1(Map<String, String> params, String publicKey, String charset, String sign_type)
-		boolean flag = AlipaySignature.rsaCheckV1(params, alipayPublicKey, "UTF-8", "RSA2");
+		//boolean flag = AlipaySignature.rsaCheckV1(params, alipayPublicKey, "UTF-8", "RSA2");
 		AlipayParameter alipayParameter = JSON.parseObject(JSON.toJSONString(params), AlipayParameter.class);
 		//判断是否已经处理过这个订单，这个订单是否成功了
-		Integer handlerCount = Integer.valueOf(myService.getSingleResult("select count(*) from alipayParameter where trade_no ='"+alipayParameter.getTrade_no()+"' and trade_status='"+alipayParameter.getTrade_status()+"'"));
+		Integer handlerCount = Integer.valueOf(myService.getSingleResult("select count(*) from alipayParameter where trade_no ='"+alipayParameter.getTrade_no()+"' and trade_status='TRADE_SUCCESS'"));
 		if (handlerCount==0) {//没处理过进行处理
 			//修改交易状态
 			UserPayLog userPayLog = new UserPayLog();
@@ -124,14 +140,62 @@ public class AlipayAction {
 	
 	//微信返回通知
 	@RequestMapping("/weixin")
-	public void weixinReturnUrl(WeiXinParameter weiXinParameter,HttpServletResponse response) throws IOException {
-		myService.save(weiXinParameter);
-		response.getWriter().print("<xml><return_code><![CDATA["+weiXinParameter.getReturn_code()+"]]></return_code><return_msg><![CDATA["+weiXinParameter.getReturn_msg()+"]]></return_msg></xml>");
+	public void weixinReturnUrl(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		try{  
+            BufferedReader reader = request.getReader();  
+  
+            String line = "";  
+            StringBuffer inputString = new StringBuffer();  
+  
+            try{  
+                PrintWriter writer = response.getWriter();  
+  
+                while ((line = reader.readLine()) != null) {  
+                    inputString.append(line);  
+                }  
+  
+                if(reader!=null){  
+                    reader.close();  
+                }  
+  
+                System.out.println("----[微信回调]接收到的报文---"+inputString.toString());  
+  
+                if(StringUtil.hashText(inputString.toString())){  
+                    WeiXinParameter alipayParameter = JdomParseXmlUtils.getWXPayResult(inputString.toString());  
+                    myService.save(alipayParameter);
+                    if("SUCCESS".equalsIgnoreCase(alipayParameter.getReturn_code())){  
+                        writer.write(backWeixin("SUCCESS","OK")); 
+                        Integer handlerCount = Integer.valueOf(myService.getSingleResult("select count(*) from WeiXinParameter where transaction_id ='"+alipayParameter.getTransaction_id()+"' and result_code='SUCCESS'"));
+                		if (handlerCount==0) {//没处理过进行处理
+                			//修改交易状态
+                			UserPayLog userPayLog = new UserPayLog();
+                			userPayLog.setId(alipayParameter.getOut_trade_no());
+                			userPayLog.setPayState(1);
+                			myService.update(userPayLog);
+                			handlerPayBiz(alipayParameter.getOut_trade_no());
+                		}
+                		
+                    }else{  
+                        writer.write(backWeixin("FAIL",alipayParameter.getReturn_msg()));  
+                          
+                        System.out.println("---------微信支付返回Fail----------"+alipayParameter.getReturn_msg());  
+                    }  
+  
+                    if(writer!=null){  
+                        writer.close();  
+                    }  
+                }else{  
+                    writer.write(backWeixin("FAIL","未获取到微信返回的结果"));  
+                }  
+            }catch(Exception e){  
+                e.printStackTrace();  
+            }  
+        }catch(Exception ex){  
+            ex.printStackTrace();  
+        }  
 	}
 	
-	public void name() {
-		
-	}
+	
 	
 	/**
 	 * 获取签名的商品信息
@@ -147,14 +211,9 @@ public class AlipayAction {
 		String userId=map.get("userId");
 		String biz_id = map.get("biz_id");
 		if (paytype.equals("weixin")) {
-			Connection connect = Jsoup.connect("https://api.mch.weixin.qq.com/pay/unifiedorder");
 			UserPayLog userPayLog = new UserPayLog();
 			String orderId=IdManage.getTimeUUid();
-			connect.data("appid", "");
-			connect.data("mch_id", "");
-			connect.data("nonce_str", orderId);
-			connect.data("sign", "");
-			connect.data("sign_type", "HMAC-SHA256");
+			
 			String title="";
 			String body="";
 			String total_fee="";
@@ -176,17 +235,36 @@ public class AlipayAction {
 				body="聆听大咖回答的问题";
 				total_fee="0.01";
 			}
-			connect.data("body", title);
-			connect.data("detail", body);
-			connect.data("total_fee", total_fee);
-			
-			connect.data("out_trade_no", orderId);
-			connect.data("spbill_create_ip", "39.108.95.173");
 			String path = request.getContextPath();
 			String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
-			connect.data("notify_url", basePath+"pay/weixin");
-			connect.data("trade_type", "APP");
 			
+			SortedMap<Object,Object> parameters = new TreeMap<Object,Object>();  
+	        parameters.put("appid", weixinAppId);  
+	        parameters.put("mch_id", weixinMch_id);  
+	        parameters.put("nonce_str", orderId);  
+	        parameters.put("body", title);  
+	        parameters.put("detail", body);  
+	        parameters.put("out_trade_no", orderId);  
+	        parameters.put("total_fee", total_fee);  
+	        parameters.put("notify_url", basePath+"pay/weixin");  
+	        parameters.put("trade_type", "APP");  
+	        parameters.put("spbill_create_ip", weixinSpbill_create_ip);
+	        String sign=createSign("UTF-8", parameters);
+	        parameters.put("sign", sign);  
+			String xmlInfo = xmlInfo(parameters);
+			String wxUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";  
+	        
+	        String method = "POST";  
+	          
+	        String weixinPost = httpsRequest(wxUrl, method, xmlInfo).toString(); 
+	        UnifiedorderResult unifiedorderResult = JdomParseXmlUtils.getUnifiedorderResult(weixinPost);
+	        System.out.println(unifiedorderResult);
+	        Map<String, Object> mapresult=new HashMap<String, Object>();
+	        Result result = new Result();
+	        mapresult.put("payparam", unifiedorderResult);
+	        mapresult.put("orderId", orderId);
+	        result.setData(mapresult);
+	        
 			userPayLog.setId(orderId);
 			userPayLog.setTitle(title);
 			userPayLog.setContext(body);
@@ -196,8 +274,7 @@ public class AlipayAction {
 			userPayLog.setPayState(0);
 			userPayLog.setPayTime(DateUtil.getDate());
 			myService.save(userPayLog);
-			Document document = connect.post();
-			System.out.println(document.text());
+			ResponseUtil.print(response, result);
 		}else {
 			PayBizInfo payBizInfo=new PayBizInfo();
 			UserPayLog userPayLog = new UserPayLog();
@@ -270,5 +347,196 @@ public class AlipayAction {
 		UserPayLog userPayLog = myService.getModel("select * from userPayLog where id='"+id+"'", UserPayLog.class);
 		ResponseUtil.print(response, userPayLog);
 	}
-	
+	/**返回给微信的消息
+     * 
+     * @param return_code
+     * @param return_msg
+     * @param output
+     * @return
+     */
+    /*<xml> 
+    <return_code><![CDATA[SUCCESS]]></return_code>
+    <return_msg><![CDATA[OK]]></return_msg>
+    </xml>*/
+    public static String backWeixin(String return_code, String return_msg) {
+        StringBuffer bf = new StringBuffer();
+        bf.append("<xml>");
+
+        bf.append("<return_code><![CDATA[");
+        bf.append(return_code);
+        bf.append("]]></return_code>");
+
+        bf.append("<return_msg><![CDATA[");
+        bf.append(return_msg);
+        bf.append("]]></return_msg>");
+
+        bf.append("</xml>");
+        return bf.toString();
+    }
+	/** 
+     * 微信支付签名算法sign 
+     * @param characterEncoding 
+     * @param parameters 
+     * @return 
+     */  
+    @SuppressWarnings("rawtypes")  
+    public static String createSign(String characterEncoding,SortedMap<Object,Object> parameters){  
+        StringBuffer sb = new StringBuffer();  
+        Set es = parameters.entrySet();//所有参与传参的参数按照accsii排序（升序）  
+        Iterator it = es.iterator();  
+        while(it.hasNext()) {  
+            Map.Entry entry = (Map.Entry)it.next();  
+            String k = (String)entry.getKey();  
+            Object v = entry.getValue();  
+            if(null != v && !"".equals(v)   
+                    && !"sign".equals(k) && !"key".equals(k)) {  
+                sb.append(k + "=" + v + "&");  
+            }  
+        }  
+        System.out.println("字符串拼接后是："+sb.toString());  
+        String sign = MD5Util.MD5Encode(sb.toString(), characterEncoding).toUpperCase();  
+        return sign;  
+    }  
+    
+    /** 
+     * post请求并得到返回结果 
+     * @param requestUrl 
+     * @param requestMethod 
+     * @param output 
+     * @return 
+     */  
+    public static String httpsRequest(String requestUrl, String requestMethod, String output) {  
+        try{  
+            URL url = new URL(requestUrl);  
+            javax.net.ssl.HttpsURLConnection connection = (javax.net.ssl.HttpsURLConnection) url.openConnection();  
+            connection.setDoOutput(true);  
+            connection.setDoInput(true);  
+            connection.setUseCaches(false);  
+            connection.setRequestMethod(requestMethod);  
+            if (null != output) {  
+                OutputStream outputStream = connection.getOutputStream();  
+                outputStream.write(output.getBytes("UTF-8"));  
+                outputStream.close();  
+            }  
+            // 从输入流读取返回内容  
+            InputStream inputStream = connection.getInputStream();  
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "utf-8");  
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);  
+            String str = null;  
+            StringBuffer buffer = new StringBuffer();  
+            while ((str = bufferedReader.readLine()) != null) {  
+                buffer.append(str);  
+            }  
+            bufferedReader.close();  
+            inputStreamReader.close();  
+            inputStream.close();  
+            inputStream = null;  
+            connection.disconnect();  
+            return buffer.toString();  
+        }catch(Exception ex){  
+            ex.printStackTrace();  
+        }  
+  
+        return "";  
+    } 
+    /** 
+     * 构造xml参数 
+     * @param xml 
+     * @return 
+     */  
+    public String xmlInfo(SortedMap<Object,Object> parameters){  
+        //构造xml参数的时候，至少有10个必传参数  
+        /* 
+         * <xml> 
+               <appid>wx2421b1c4370ec43b</appid> 
+               <attach>支付测试</attach> 
+               <body>JSAPI支付测试</body> 
+               <mch_id>10000100</mch_id> 
+               <nonce_str>1add1a30ac87aa2db72f57a2375d8fec</nonce_str> 
+               <notify_url>http://wxpay.weixin.qq.com/pub_v2/pay/notify.v2.php</notify_url> 
+               <openid>oUpF8uMuAJO_M2pxb1Q9zNjWeS6o</openid> 
+               <out_trade_no>1415659990</out_trade_no> 
+               <spbill_create_ip>14.23.150.211</spbill_create_ip> 
+               <total_fee>1</total_fee> 
+               <trade_type>JSAPI</trade_type> 
+               <sign>0CB01533B8C1EF103065174F50BCA001</sign> 
+            </xml> 
+            parameters.put("appid", weixinAppId);  
+	        parameters.put("mch_id", weixinMch_id);  
+	        parameters.put("nonce_str", orderId);  
+	        parameters.put("body", title);  
+	        parameters.put("detail", body);  
+	        parameters.put("out_trade_no", orderId);  
+	        parameters.put("total_fee", total_fee);  
+	        parameters.put("notify_url", basePath+"pay/weixin");  
+	        parameters.put("trade_type", "APP");  
+	        parameters.put("spbill_create_ip", weixinSpbill_create_ip);
+	        String sign=createSign("UTF-8", parameters);
+	        parameters.put("sign", sign);  
+         */  
+  
+            StringBuffer bf = new StringBuffer();  
+            bf.append("<xml>");  
+  
+            bf.append("<appid><![CDATA[");  
+            bf.append(parameters.get("appid"));  
+            bf.append("]]></appid>");  
+  
+            bf.append("<mch_id><![CDATA[");  
+            bf.append(parameters.get("mch_id"));  
+            bf.append("]]></mch_id>");  
+  
+            bf.append("<nonce_str><![CDATA[");  
+            bf.append(parameters.get("nonce_str"));  
+            bf.append("]]></nonce_str>");  
+  
+            bf.append("<sign><![CDATA[");  
+            bf.append(parameters.get("sign"));  
+            bf.append("]]></sign>");  
+  
+            bf.append("<body><![CDATA[");  
+            bf.append(parameters.get("body"));  
+            bf.append("]]></body>");  
+  
+            bf.append("<detail><![CDATA[");  
+            bf.append(parameters.get("detail"));  
+            bf.append("]]></detail>");  
+  
+           /* bf.append("<attach><![CDATA[");  
+            bf.append(parameters.get(""));  
+            bf.append("]]></attach>");  
+  */
+            bf.append("<out_trade_no><![CDATA[");  
+            bf.append(parameters.get("out_trade_no"));  
+            bf.append("]]></out_trade_no>");  
+  
+            bf.append("<total_fee><![CDATA[");  
+            bf.append(parameters.get("total_fee"));  
+            bf.append("]]></total_fee>");  
+  
+            bf.append("<spbill_create_ip><![CDATA[");  
+            bf.append(parameters.get("spbill_create_ip"));  
+            bf.append("]]></spbill_create_ip>");  
+  
+            /*bf.append("<time_start><![CDATA[");  
+            bf.append(parameters.get(""));  
+            bf.append("]]></time_start>");  
+  
+            bf.append("<time_expire><![CDATA[");  
+            bf.append(parameters.get(""));  
+            bf.append("]]></time_expire>");  
+  */
+            bf.append("<notify_url><![CDATA[");  
+            bf.append(parameters.get("notify_url"));  
+            bf.append("]]></notify_url>");  
+  
+            bf.append("<trade_type><![CDATA[");  
+            bf.append(parameters.get("trade_type"));  
+            bf.append("]]></trade_type>");  
+  
+  
+            bf.append("</xml>");  
+            return bf.toString();  
+  
+    }  
 }

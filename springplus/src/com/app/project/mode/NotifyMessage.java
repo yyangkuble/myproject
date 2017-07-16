@@ -20,7 +20,7 @@ public class NotifyMessage {
 	String title;
 	@ApiDesc("详情")
 	String context;
-	@ApiDesc("通知类型  1： 加入团队申请 2：日志评论  3：点赞  4：课程更新  5：大咖回答提问  6：拒绝加入团队提醒  7:已同意加入团队申请")
+	@ApiDesc("通知类型  1： 加入团队申请      2：日志评论  3：普通问题回答被点赞   4:回答普通问题    5：回答付费提问    6日志点赞 ")
 	String notifyType;
 	@ApiDesc("需要时使用，保存点击通知需要的数据")
 	String jsonData;

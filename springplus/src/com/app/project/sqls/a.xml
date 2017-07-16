@@ -10,7 +10,7 @@
 	</sql>
 	<!-- 小秘书提醒 生日 7天内-->
 	<sql id="secretaryRemindBirthay">
-		select * from ( select id,name,birthday,datediff(concat(DATE_FORMAT(NOW(), '%Y'),right(birthday,6)),curdate()) as daycount,'1' as remindType  from  custom where userId=#{userId}) aa where daycount < 8
+		select * from ( select id,name,birthday,datediff(concat(DATE_FORMAT(NOW(), '%Y'),right(birthday,6)),curdate()) as daycount,'1' as remindType  from  custom where userId=#{userId}) aa where daycount < 8 and daycount >= 0
 	</sql>
 	<!-- 小秘书提醒 车险到期-->
 	<sql id="secretaryRemindCar">
