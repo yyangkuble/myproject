@@ -20,6 +20,7 @@ import www.springmvcplus.com.util.AESUtil;
 import www.springmvcplus.com.util.DateUtil;
 import www.springmvcplus.com.util.IdManage;
 import www.springmvcplus.com.util.ResponseUtil;
+import www.springmvcplus.com.util.StringUtil;
 
 import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
@@ -30,6 +31,9 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.app.project.mode.AlipayParameter;
+import com.app.project.mode.PayAskLog;
+import com.app.project.mode.User;
+import com.app.project.mode.UserFriendsAsk;
 import com.app.project.mode.UserPayLog;
 import com.app.project.mode.WeiXinParameter;
 import com.app.project.pay.PayBizInfo;
@@ -66,11 +70,58 @@ public class AlipayAction {
 		//切记alipaypublickey是支付宝的公钥，请去open.alipay.com对应应用下查看。
 		//boolean AlipaySignature.rsaCheckV1(Map<String, String> params, String publicKey, String charset, String sign_type)
 		boolean flag = AlipaySignature.rsaCheckV1(params, alipayPublicKey, "UTF-8", "RSA2");
-		if (flag==true) {
-			System.out.println(JSON.toJSONString(params));
+		AlipayParameter alipayParameter = JSON.parseObject(JSON.toJSONString(params), AlipayParameter.class);
+		//判断是否已经处理过这个订单，这个订单是否成功了
+		Integer handlerCount = Integer.valueOf(myService.getSingleResult("select count(*) from alipayParameter where trade_no ='"+alipayParameter.getTrade_no()+"' and trade_status='"+alipayParameter.getTrade_status()+"'"));
+		if (handlerCount==0) {//没处理过进行处理
+			//修改交易状态
+			UserPayLog userPayLog = new UserPayLog();
+			userPayLog.setId(alipayParameter.getOut_trade_no());
+			userPayLog.setPayState(1);
+			myService.update(userPayLog);
+			handlerPayBiz(alipayParameter.getOut_trade_no());
 		}
-		response.getWriter().print(flag);
+		
+		myService.save(alipayParameter);
+		
+		
+		response.getWriter().print("success");
 	}
+	//初始化支付业务
+	public void handlerPayBiz(String payId) {
+		UserPayLog payLog=myService.getModel("select * from UserPayLog where id='"+payId+"'", UserPayLog.class);
+		//支付的业务类型，1:vip  296元，2:发表大咖问题 公开 5元 3：发表大咖问题 不公开 20元， 4：聆听大咖回答 1元
+		if (payLog.getBiz_type().equals("1")) {//业务： 被邀请人送50元，邀请人送100，会员周期1年
+			User user = new User();
+			user.setId(payLog.getUserId());
+			user.setUserLevel(2);//用户类别， 1：试用用户   2：vip用户  3：vip过期用户  4：试用结束 未支付vip
+			user.setVipTimeEnd(DateUtil.dateMath(DateUtil.getDate(), DateUtil.Year, 1, "yyyy-MM-dd HH:mm:ss"));//1年过期
+			String userlevel=myService.getSingleResult("select userlevel from user where id='"+user.getId()+"'");
+			if (StringUtil.hashText(userlevel) && userlevel.equals("1")) {//如果这个用户是第一次充值vip
+				//查询这个用户是否是被邀请来的
+				UserFriendsAsk userFriendsAsk=myService.getModel("select * from UserFriendsAsk where friendUserId='"+user.getId()+"'", UserFriendsAsk.class);
+				if (userFriendsAsk != null) {//被邀请来的送50元，邀请人送100
+					//给自己加50
+					myService.update("update user set money=money+50,historyMoney=historyMoney+50 where id='"+user.getId()+"'");
+					//给邀请人加100
+					myService.update("update user set money=money+100,historyMoney=historyMoney+100 where id='"+user.getId()+"'");
+					//修改邀请人的 邀请记录
+					userFriendsAsk.setFriendMoney(50);
+					userFriendsAsk.setIsVip(1);
+					userFriendsAsk.setMyMoney(100);
+					myService.update(userFriendsAsk);
+				}
+			}
+			myService.update(user);
+		}else if (payLog.getBiz_type().equals("4")) {
+			//添加支付记录
+			PayAskLog payAskLog=new PayAskLog();
+			payAskLog.setUserId(payLog.getUserId());
+			payAskLog.setPayAskId(payLog.getBiz_id());
+			myService.update(payAskLog);
+		}
+	}
+	
 	//微信返回通知
 	@RequestMapping("/weixin")
 	public void weixinReturnUrl(WeiXinParameter weiXinParameter,HttpServletResponse response) throws IOException {
@@ -191,6 +242,7 @@ public class AlipayAction {
 			        System.out.println(alipayResponse.getBody());//就是orderString 可以直接给客户端请求，无需再做处理。
 			        mapresult.put("payparam", alipayResponse.getBody());
 			        mapresult.put("orderId", payBizInfo.getOut_trade_no());
+			        result.setData(mapresult);
 			        //添加数据库
 			        userPayLog.setId(payBizInfo.getOut_trade_no());
 					userPayLog.setTitle(payBizInfo.getSubjec());

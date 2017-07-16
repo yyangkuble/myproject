@@ -6,15 +6,13 @@
 	</sql>
 	<!-- 查询所有公告 -->
 	<sql id="findGroupNotice">
-		select * from GroupNotice 
-		<where>
+		select * from GroupNotice where 1=1 
 			<if if="groupId != null">
-				 groupId=#{groupId} 
+				and groupId=#{groupId} 
 			</if>
 			<if if="id != null">
 				and id = #{id}
 			</if>
-		</where>
 		 order by id desc
 	</sql>
 	<!-- 通过团队id查询团队信息 -->

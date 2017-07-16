@@ -124,7 +124,7 @@ public class SelectIntecept {
 			for (Map<String, Object> map : listResult) {
 				Object idtype = map.get("idtype");
 				if (idtype.equals("trip")) {
-					List<Map<String, Object>> listMaps = baseDao.getListMaps("select visitDate,visitProject from usertrip where visitCustomId='"+map.get("customid")+"' and a.state=1 and left(a.visittime,7)='"+map.get("tripdate")+"' order by visitTime desc");
+					List<Map<String, Object>> listMaps = baseDao.getListMaps("select visitDate,visitProject from usertrip where visitCustomId='"+map.get("customid")+"' and state=1 and left(visittime,7)='"+map.get("tripdate")+"' order by visitTime desc limit 0,3");
 					map.put("customTrip", listMaps);
 				}
 			}

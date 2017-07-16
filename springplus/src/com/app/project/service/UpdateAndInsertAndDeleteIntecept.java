@@ -137,7 +137,7 @@ public class UpdateAndInsertAndDeleteIntecept {
 				userTrip.setVisitDate(userTrip.getVisitTime().substring(0, 10));
 			}
 			if (handleType==handleType.update) {
-				if (!userTrip.getVisitTime().equals(baseDao.getSingleResult("select visittime from usertrip where id='"+userTrip.getId()+"'"))) {
+				if (!StringUtil.valueOf(userTrip.getVisitTime()).equals(baseDao.getSingleResult("select visittime from usertrip where id='"+userTrip.getId()+"'"))) {
 					userTrip.setIsVisitTimeUpdate(true);
 				}
 			}

@@ -37,9 +37,12 @@ public class User {
 	@Transient
 	@ApiDesc("融云groupId")
 	String rongCloudGroupId;
-	@Transient
 	@ApiDesc("用户类别， 1：试用用户   2：vip用户")
 	Integer userLevel;
+	@Transient
+	Integer userState;//用户状态  1：试用用户   2：vip用户  3：vip过期用户  4：试用结束 未支付vip
+	String vipTimeEnd;//会员到期时间
+	
 	@Transient
 	@ApiDesc("组名称")
 	String groupName;
@@ -69,6 +72,18 @@ public class User {
 	String realName;//真实名称
 	
 	
+	public Integer getUserState() {
+		return userState;
+	}
+	public void setUserState(Integer userState) {
+		this.userState = userState;
+	}
+	public String getVipTimeEnd() {
+		return vipTimeEnd;
+	}
+	public void setVipTimeEnd(String vipTimeEnd) {
+		this.vipTimeEnd = vipTimeEnd;
+	}
 	public String getZhifubao() {
 		return zhifubao;
 	}

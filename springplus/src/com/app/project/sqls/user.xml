@@ -4,15 +4,15 @@
 		select count(*) as telCount from user where tel = #{tel}
 	</sql>
 	<sql id="selectUserByTel">
-		select a.*,b.groupName,b.rongCloudGroupId from user a left join group_ b on a.groupid=b.id where tel = #{tel}
+		select a.*,b.groupName,b.rongCloudGroupId,case when a.vipTimeEnd > now() then case when a.userLevel=1 then 1 else 2 end else  case when a.userLevel=1 then 4 else 3 end end as userState from user a left join group_ b on a.groupid=b.id where tel = #{tel}
 	</sql>
 	<!-- 验证登录 -->
 	<sql id="login">
-		select * from user where tel = #{tel} and password=#{password}
+		select  a.*,case when a.vipTimeEnd > now() then case when a.userLevel=1 then 1 else 2 end else  case when a.userLevel=1 then 4 else 3 end end as userState from user a where a.tel = #{tel} and a.password=#{password}
 	</sql>
 	<!-- 通过电话查询用户id -->
 	<sql id="findUserById">
-		select a.*,b.groupName,b.rongCloudGroupId from user a left join group_ b on a.groupid=b.id where a.id=#{id}
+		select a.*,b.groupName,b.rongCloudGroupId,case when a.vipTimeEnd > now() then case when a.userLevel=1 then 1 else 2 end else  case when a.userLevel=1 then 4 else 3 end end as userState from user a left join group_ b on a.groupid=b.id where a.id=#{id}
 	</sql>
 	<sql id="findUserByIdMessageUsed">
 		select name,imgUrl from user where id=#{id}
