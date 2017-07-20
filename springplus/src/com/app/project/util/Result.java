@@ -8,7 +8,7 @@ public class Result {
 	String errorMessage;
 	Integer page;
 	Integer max;
-	Object data;
+	Object data="";
 	Long count;
 	public Result() {
 		// TODO Auto-generated constructor stub

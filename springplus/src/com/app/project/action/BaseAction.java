@@ -18,10 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alibaba.druid.sql.visitor.functions.If;
 import com.alibaba.fastjson.JSON;
+import com.app.project.mode.Custom;
 import com.app.project.mode.RenCaiPool;
 import com.app.project.mode.TestResultLog;
 import com.app.project.mode.TestResultLogOther;
 import com.app.project.mode.User;
+import com.app.project.mode.UserPlan;
+import com.app.project.mode.UserTrip;
+import com.app.project.mode.UserVisitLog;
 import com.app.project.util.PublicUtil;
 import com.app.project.util.Result;
 import com.sun.org.apache.bcel.internal.generic.NEW;
@@ -318,6 +322,61 @@ public class BaseAction {
 		ResponseUtil.print(response, new Result(renCaiPools));
 	}
 	
+	@RequestMapping("/userTripYes")
+	public void changeUserTripState(HttpServletRequest request,HttpServletResponse response) {
+		Map<String, String> map = AESUtil.converParameter(request);
+		String userTripId = map.get("userTripId");
+		myService.update("update usertrip set state=3 where id='"+userTripId+"'");//标记完成
+			User user = myService.getModel("select customWarn,customLevelChange from user where id=(select userId from UserTrip where id='"+userTripId+"')", User.class);
+			UserTrip userTrip = myService.getModel("select * from usertrip where id='"+userTripId+"'", UserTrip.class);
+			Custom custom = myService.getModel("select level,name from custom where id='"+userTrip.getVisitCustomId()+"'",Custom.class);
+			String customLevel=custom.getLevel();
+			String customName=custom.getName();
+			userTrip.setCustomLevel(customLevel);
+			userTrip.setCustomName(customName);
+			userTrip.setCustomWarn("0");
+			if (user.getCustomLevelChange()==1 && userTrip.getVisitType().equals("营销")) {//如果自动升级
+				userTrip.setCustomWarn(StringUtil.valueOf(user.getCustomWarn()));//标记是否提醒
+				String visitProject=StringUtil.valueOf(userTrip.getVisitProject());
+				if (customLevel.equals("D")) {
+					if (visitProject.equals("自定义") && visitProject.equals("关系建立")) {
+						myService.update("update custom set level='C' where id='"+userTrip.getVisitCustomId()+"'");
+						userTrip.setCustomLevel("C");
+					}
+					if (visitProject.equals("需求分析")) {
+						myService.update("update custom set level='B' where id='"+userTrip.getVisitCustomId()+"'");
+						userTrip.setCustomLevel("B");
+					}
+					if (visitProject.equals("建议书与促成")) {
+						myService.update("update custom set level='A' where id='"+userTrip.getVisitCustomId()+"'");
+						userTrip.setCustomLevel("A");
+					}
+				}
+				if (customLevel.equals("C")) {
+					if (visitProject.equals("需求分析")) {
+						myService.update("update custom set level='B' where id='"+userTrip.getVisitCustomId()+"'");
+						userTrip.setCustomLevel("B");
+					}
+					if (visitProject.equals("建议书与促成")) {
+						myService.update("update custom set level='A' where id='"+userTrip.getVisitCustomId()+"'");
+						userTrip.setCustomLevel("A");
+					}
+				}
+				if (customLevel.equals("B")) {
+					if (visitProject.equals("建议书与促成")) {
+						myService.update("update custom set level='A' where id='"+userTrip.getVisitCustomId()+"'");
+						userTrip.setCustomLevel("A");
+					}
+				}
+				if (customLevel.equals("A")) {
+					if (visitProject.equals("送保单与签收")) {
+						myService.update("update custom set level='C' where id='"+userTrip.getVisitCustomId()+"'");
+						userTrip.setCustomLevel("C");
+					}
+				}
+			}
+			ResponseUtil.print(response, new Result(userTrip));
+	}
 	
 	@RequestMapping("/getMarkById")
 	public void getMarkById(HttpServletRequest request,HttpServletResponse response) {
@@ -499,6 +558,21 @@ public class BaseAction {
 		System.out.println(list);
 		ResponseUtil.print(response, result);
 	}
+	@RequestMapping("/addplanCustom")
+	public void addplanCustom(HttpServletRequest request,HttpServletResponse response) {
+		Map<String, String> map = AESUtil.converParameter(request);
+		String customIds = map.get("customIds");
+		String userId = map.get("userId");
+		String[] split = customIds.split(",");
+		for (String customId : split) {
+			UserPlan userPlan = new UserPlan();
+			userPlan.setCustomId(customId);
+			userPlan.setUserId(userId);
+			myService.save(userPlan);
+		}
+		ResponseUtil.print(response, new Result());
+	}
+	
 	//用户的根据日历获取时间
 	@RequestMapping("/selectUserTripByDate")
 	public void selectUserTripByDate(HttpServletRequest request,HttpServletResponse response) {

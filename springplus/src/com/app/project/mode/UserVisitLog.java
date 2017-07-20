@@ -2,6 +2,7 @@ package com.app.project.mode;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import www.springmvcplus.com.common.ApiDesc;
 import www.springmvcplus.com.common.Generated;
@@ -29,8 +30,18 @@ public class UserVisitLog {
 	@Text
 	@ApiDesc("多张使用,分割")
 	String imgUrls;
+	//从用户行程 里面添加的，添加这个字段
+	@Transient
+	String userTripId;
 	
 	
+	
+	public String getUserTripId() {
+		return userTripId;
+	}
+	public void setUserTripId(String userTripId) {
+		this.userTripId = userTripId;
+	}
 	public String getImgUrls() {
 		return imgUrls;
 	}

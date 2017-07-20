@@ -62,6 +62,8 @@ public class User {
 	Boolean isUpdateTripWarn=false;//是否修改了日程提醒
 	@ApiDesc("客户自动升级提醒，0：不是  1：是，默认为1")
 	Integer customWarn;
+	@ApiDesc("客户是否自动升级")
+	Integer customLevelChange;
 	@ApiDesc("是否在WiFi下看视频  0：不是，1：是，，默认为1")
 	Integer wifiVideo;
 	@ApiDesc("是否是专家   1：专家")
@@ -72,6 +74,12 @@ public class User {
 	String realName;//真实名称
 	
 	
+	public Integer getCustomLevelChange() {
+		return customLevelChange;
+	}
+	public void setCustomLevelChange(Integer customLevelChange) {
+		this.customLevelChange = customLevelChange;
+	}
 	public Integer getUserState() {
 		return userState;
 	}

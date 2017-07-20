@@ -44,9 +44,17 @@
 		select a.*,b.name as userName,b.imgUrl as userImgUrl from GroupJournalComment a join user b on a.userid=b.id where journalId = #{journalId} and context='_Fabulous_' order by a.id
 	</sql>
 	<sql id="personnelPool">
-		(select a.visitCustomId,a.visitProject,DATE_FORMAT(a.visitTime,'%c月%e日') as visitTime,b.name as customname from usertrip a join custom b on a.visitCustomId = b.id where a.userid in(select id from user where groupid = #{groupId}) and visittype='增员' and visitproject in('面谈报名','受训','结训','上岗','关系建立')) 
+		(select a.visitCustomId,a.visitProject,DATE_FORMAT(a.visitTime,'%c月%e日') as visitTime,b.name as customname from usertrip a join custom b on a.visitCustomId = b.id where a.userid in(select id from user where groupid = #{groupId})
+		<if if="customName != null">
+		 and b.name=#{customName}
+		 </if>
+		  and visittype='增员' and visitproject in('面谈报名','受训','结训','上岗','关系建立')) 
 UNION
-(select testedcustomid as visitCustomId,DATE_FORMAT(testtime,'%c月%e日') as visitTime,testedname as customname,'性向测验' as visitProject from test_resultlog where testedcustomid in (select distinct a.visitCustomId from usertrip a  where a.userid in(select id from user where groupid = #{groupId}) and visittype='增员' and visitproject in('面谈报名','受训','结训','上岗','关系建立') ))
+(select testedcustomid as visitCustomId,DATE_FORMAT(testtime,'%c月%e日') as visitTime,testedname as customname,'性向测验' as visitProject from test_resultlog where 
+<if if="customName != null">
+	testedname=#{customName} and
+</if>
+ testedcustomid in (select distinct a.visitCustomId from usertrip a  where a.userid in(select id from user where groupid = #{groupId}) and visittype='增员' and visitproject in('面谈报名','受训','结训','上岗','关系建立') ))
 order by visitCustomId,visitTime
 	</sql>
 	<!-- 通过日志id查询评论 -->

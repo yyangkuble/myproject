@@ -43,16 +43,39 @@ public class UserTrip {
 	@ApiDesc("客户名称")
 	String visitCustomName;
 	@Transient
+	String customName;
+	@Transient
 	@ApiDesc("客户等级")
 	String visitCustomLevel;
+	@Transient
+	String customLevel;
 	@Transient
 	@ApiDesc("超时时间")
 	String triptimeout;
 	@Transient
 	Boolean isVisitTimeUpdate=false;
+	@Transient
+	String customWarn;
 	
 	
-	
+	public String getCustomName() {
+		return customName;
+	}
+	public void setCustomName(String customName) {
+		this.customName = customName;
+	}
+	public String getCustomLevel() {
+		return customLevel;
+	}
+	public void setCustomLevel(String customLevel) {
+		this.customLevel = customLevel;
+	}
+	public String getCustomWarn() {
+		return customWarn;
+	}
+	public void setCustomWarn(String customWarn) {
+		this.customWarn = customWarn;
+	}
 	public Boolean getIsVisitTimeUpdate() {
 		return isVisitTimeUpdate;
 	}

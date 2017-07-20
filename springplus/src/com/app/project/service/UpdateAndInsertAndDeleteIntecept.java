@@ -28,6 +28,7 @@ import com.app.project.mode.AnswerComments;
 import com.app.project.mode.AnswerYes;
 import com.app.project.mode.Ask;
 import com.app.project.mode.Custom;
+import com.app.project.mode.CustomImportanceDay;
 import com.app.project.mode.Group;
 import com.app.project.mode.GroupJournal;
 import com.app.project.mode.GroupJournalComment;
@@ -40,6 +41,7 @@ import com.app.project.mode.UserCarPolicyLog;
 import com.app.project.mode.UserFriendsAsk;
 import com.app.project.mode.UserImgsShare;
 import com.app.project.mode.UserTrip;
+import com.app.project.mode.UserVisitLog;
 import com.app.project.util.Getui;
 import com.app.project.util.PublicUtil;
 import com.app.project.util.Result;
@@ -61,6 +63,10 @@ public class UpdateAndInsertAndDeleteIntecept {
 			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				// TODO Auto-generated catch block
 			}
+		}
+		if (entity instanceof CustomImportanceDay) {
+			CustomImportanceDay customImportanceDay = (CustomImportanceDay) entity;
+			System.out.println(customImportanceDay);
 		}
 		if (entity instanceof MoneyLog) {//体现
 			MoneyLog moneyLog = (MoneyLog) entity;
@@ -178,19 +184,6 @@ public class UpdateAndInsertAndDeleteIntecept {
 						custom.setZodiac(PublicUtil.getConstellation(custom.getBirthDay()));
 					}
 				}
-			}else {//修改客户
-				if (StringUtil.hashText(custom.getBirthDay())) {
-					int countName = Integer.valueOf(baseDao.getSingleResult("select count(*) from custom where userId ='"+custom.getUserId()+"' and name='"+custom.getName()+"'"));
-					if (countName != 0) {//名称重复不能添加
-						result.setErrorCode(1);
-						result.setErrorMessage("名称重复");
-					}else {
-						if (StringUtil.hashText(custom.getBirthDay())) {
-							custom.setAge(PublicUtil.getAge(custom.getBirthDay()));
-							custom.setZodiac(PublicUtil.getConstellation(custom.getBirthDay()));
-						}
-					}
-				}
 			}
 			
 		}
@@ -266,17 +259,32 @@ public class UpdateAndInsertAndDeleteIntecept {
 			Getui.sendMessage(notifyMessage.getToUserId(), notifyMessage.getTitle());
 		}
 		
-		
+		if (entity instanceof GroupNotice) {
+			GroupNotice groupNotice=(GroupNotice) entity;
+			
+			List<User> users = baseDao.getListModels("select name,imgUrl from user where groupid='"+groupNotice.getGroupId()+"'",User.class);
+			for (User user : users) {
+				NotifyMessage notifyMessage=new NotifyMessage();
+				notifyMessage.setContext(groupNotice.getNoticeText());
+				notifyMessage.setTitle("团队通知");
+				notifyMessage.setFromUserId("");
+				notifyMessage.setIsread(0);
+				notifyMessage.setNotifyType("9");
+				notifyMessage.setToUserId(user.getId());
+				baseDao.save(notifyMessage);
+				Getui.sendMessage(notifyMessage.getToUserId(), notifyMessage.getTitle());
+				
+			}
+		}
 		if (entity instanceof UserCarPolicyLog) {
 			UserCarPolicyLog userCarPolicyLog = (UserCarPolicyLog) result.getData();
 			userCarPolicyLog.setCustomName(baseDao.getSingleResult("select name from custom where id ='"+userCarPolicyLog.getCustomId()+"'"));
 			userCarPolicyLog.setCreateTime(userCarPolicyLog.getCreateTime().substring(0, 10));
 			UserCarPolicyLog useCarPolicyLogparam = (UserCarPolicyLog) entity;
 			if (StringUtil.hashText(useCarPolicyLogparam.getImgurl())) {
-				baseDao.update("update custom set imgUrls=imgUrls+',"+useCarPolicyLogparam.getImgurl()+"' where id='"+useCarPolicyLogparam.getCustomId()+"'");
+				baseDao.update("update custom set imgUrls=imgUrls++CAST(',"+useCarPolicyLogparam.getImgurl()+"' as char) where id='"+useCarPolicyLogparam.getCustomId()+"'");
 			}
 		}
-		
 		if (entity instanceof GroupJournal) {
 			GroupJournal groupJournal = (GroupJournal) result.getData();
 			User user = baseDao.getModel("select b.name,b.imgurl from groupJournal a join user b on a.userId = b.id where a.id='"+groupJournal.getId()+"'",User.class);
@@ -328,12 +336,14 @@ public class UpdateAndInsertAndDeleteIntecept {
 					User user2 =  (User)result.getData();
 					user2.setPassword(null);
 					Group group = baseDao.getModel("select * from group_ where id = "+user2.getGroupId(),Group.class);
-					user2.setRongCloudGroupId(group.getRongCloudGroupId());
-					user2.setGroupName(group.getGroupName());
+					if (group!=null) {
+						user2.setRongCloudGroupId(group.getRongCloudGroupId());
+						user2.setGroupName(group.getGroupName());
+					}
 				}
 				//判断是否修改了  提醒任务  默认为半个小时
 				if (user.getIsUpdateTripWarn()) {
-					List<Job> jobs = baseDao.getListModels("select a.*,case when b.visitTime is null then c.startTime else b.visitTime end as servicetime from job a left join usertrip b on a.serviceId = b.id left join grouptrip c on a.serviceId=c.id where userId = '"+user.getId()+"'",Job.class);
+					List<Job> jobs = baseDao.getListModels("select a.*,case when b.visitTime is null then c.startTime else b.visitTime end as servicetime from job a left join usertrip b on a.serviceId = b.id left join grouptrip c on a.serviceId=c.id where a.userId = '"+user.getId()+"'",Job.class);
 					baseDao.delete("delete from job where userId = '"+user.getId()+"'");
 					for (Job job : jobs) {
 						Date timeRun = JobManager.getDateByVisitDate(job.getServicetime(), user.getTripWarn());

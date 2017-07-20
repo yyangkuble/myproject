@@ -135,11 +135,12 @@ public class UserAction {
 				result.setErrorMessage("电话重复，添加失败");
 			}else {
 				user.setTripWarn("半小时前");
-				user.setCustomWarn(1);
 				user.setWifiVideo(1);
 				user.setMoney(0.00);
 				user.setHistoryMoney(0.00);
 				user.setUserLevel(1);//试用用户
+				user.setCustomLevelChange(1);//客户自动升级
+				user.setCustomWarn(1);//客户自动升级提醒
 				//试用7天
 				user.setVipTimeEnd(DateUtil.dateMath(DateUtil.getDate(), DateUtil.Date, 7, "yyyy-MM-dd HH:mm:ss"));
 				int res=myService.save(user);

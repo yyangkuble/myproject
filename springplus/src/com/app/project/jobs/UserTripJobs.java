@@ -28,7 +28,7 @@ public class UserTripJobs implements Job {
 		String userId=map.getString("userId");
 		User user=myService.getModel("select * from user where id='"+userId+"'", User.class);
 		String serviceId=map.getString("serviceId");
-		if (map.getString("serviceType").equals("userTrip")) {
+		if (map.getString("serviceType").equals("userTrip")) {//用户日程
 			JobManager.finishJob(map.getString("serviceId")+map.getString("serviceType"));
 			String message=myService.getSingleResult("select mark from usertrip where id='"+serviceId+"'");
 			if (!StringUtil.valueOf(user.getTripWarn()).equals("不提醒")) {
@@ -36,13 +36,13 @@ public class UserTripJobs implements Job {
 			}
 			NotifyMessage notifyMessage=new NotifyMessage();
 			notifyMessage.setContext(message);
-			notifyMessage.setImgUrl(user.getImgUrl());
+			notifyMessage.setImgUrl("");
 			notifyMessage.setIsread(0);
-			notifyMessage.setNotifyType("用户行程");
-			notifyMessage.setTitle("用户行程");
+			notifyMessage.setNotifyType("8");
+			notifyMessage.setTitle("行程提醒通知");
 			notifyMessage.setToUserId(userId);
 			myService.save(notifyMessage);
-		}else {
+		}else {//团队日程
 			JobManager.finishJob(map.getString("serviceId")+map.getString("userId")+map.getString("serviceType"));
 			String message=myService.getSingleResult("select title from grouptrip where id='"+serviceId+"'");
 			if (!StringUtil.valueOf(user.getTripWarn()).equals("不提醒")) {
@@ -50,10 +50,10 @@ public class UserTripJobs implements Job {
 			}
 			NotifyMessage notifyMessage=new NotifyMessage();
 			notifyMessage.setContext(message);
-			notifyMessage.setImgUrl(user.getImgUrl());
+			notifyMessage.setImgUrl("");
 			notifyMessage.setIsread(0);
-			notifyMessage.setNotifyType("用户行程");
-			notifyMessage.setTitle("用户行程");
+			notifyMessage.setNotifyType("7");
+			notifyMessage.setTitle("团队行程通知");
 			notifyMessage.setToUserId(userId);
 			myService.save(notifyMessage);
 		}

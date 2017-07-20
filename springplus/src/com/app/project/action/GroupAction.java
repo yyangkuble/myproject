@@ -91,6 +91,31 @@ public class GroupAction {
 		}
 		ResponseUtil.print(response, result);
 	}
+	//同意添加用户
+	@RequestMapping("/addGroup")
+	public void addGroupYes(HttpServletRequest request,HttpServletResponse response) {
+		Map<String, String> map = AESUtil.converParameter(request);
+		String notifyId = map.get("notifyId");
+		String type=map.get("type");
+		if (type.equals("yes")) {
+			NotifyMessage notifyMessage = myService.getModel("select * from NotifyMessage where id='"+notifyId+"'", NotifyMessage.class);
+			Map<String,Object> mapJson = JSON.parseObject(notifyMessage.getJsonData(), Map.class);
+			mapJson.put("handleResult", "yes");
+			notifyMessage.setJsonData(JSON.toJSONString(mapJson));
+			myService.update(notifyMessage);
+			Object groupId = mapJson.get("groupId");
+			myService.update("update user set groupAuth=0 ,groupId="+groupId+" where id='"+notifyMessage.getFromUserId()+"'");
+			ResponseUtil.print(response, new Result(notifyMessage));
+		}else {
+			NotifyMessage notifyMessage = myService.getModel("select * from NotifyMessage where id='"+notifyId+"'", NotifyMessage.class);
+			Map<String,Object> mapJson = JSON.parseObject(notifyMessage.getJsonData(), Map.class);
+			mapJson.put("handleResult", "no");
+			notifyMessage.setJsonData(JSON.toJSONString(mapJson));
+			myService.update(notifyMessage);
+			ResponseUtil.print(response, new Result(notifyMessage));
+		}
+	}
+	
 	@RequestMapping("/groupRemoveUser")
 	public void groupRemoveUser(HttpServletRequest request,HttpServletResponse response) {
 		Map<String, String> parameter = AESUtil.converParameter(request);
