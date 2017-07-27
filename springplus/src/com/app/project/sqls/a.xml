@@ -71,11 +71,12 @@
 		
 	</sql>
 	<sql id="plancustomlist">
-		select aaa.*,bbb.name,bbb.level from(
+		select aaa.*,bbb.name,bbb.level,bbb.imgPathSmall from(
 		select 
 		case when usertripid is null then 'plan' else 'trip' end as idtype,
 		case when usertripid is null then plandate else tripDate end as tripdate,
-		case when usertripid is null then customid else visitcustomid end as customid
+		case when usertripid is null then customid else visitcustomid end as customid,
+		case when usertripid is null then planid else usertripId end as id
 		 from(
 		(select distinct a.id as usertripId,a.visitCustomId,left(a.visitDate,7) as tripDate from usertrip a  where a.userid=#{userId} and a.state=1 and left(a.visittime,7)='${month}') aa 
 		left join 
@@ -86,14 +87,15 @@
 		select 
 		case when usertripid is null then 'plan' else 'trip' end as idtype,
 		case when usertripid is null then plandate else tripDate end as tripdate,
-		case when usertripid is null then customid else visitcustomid end as customid
+		case when usertripid is null then customid else visitcustomid end as customid,
+		case when usertripid is null then planid else usertripId end as id
 		 from(
 		(select distinct a.id as usertripId,a.visitCustomId,left(a.visitDate,7) as tripDate from usertrip a  where a.userid=#{userId} and a.state=1 and left(a.visittime,7)='${month}') aa 
 		right join 
 		(select id as planid ,customId,plandate from userplan  where userid=#{userId} and plandate ='${month}') bb
 		on aa.visitCustomId=bb.customId
 		)
-		) aaa join custom bbb on aaa.customid=bbb.id
+		) aaa join custom bbb on aaa.customid=bbb.id order by bbb.level
 	</sql>
 	
 	<sql id="plancustomcount">

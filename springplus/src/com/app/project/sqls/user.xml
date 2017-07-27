@@ -48,4 +48,7 @@
 		select count(*) as count from UserFriendsAsk
 		where userId=#{userId} and isVip = 1
 	</sql>
+	<sql id="selectUserIsReg">
+		select count(*) as userCount from user where tel=#{tel}
+	</sql>
 </sqls>

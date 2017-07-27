@@ -366,6 +366,10 @@ public class UpdateAndInsertAndDeleteIntecept {
 				if (userTrip.getIsWarn()==1) {
 					UserTripJobUitl.addOrUpdateJob(userTrip,"userTrip");
 				}
+				//更新最后一次拜访的时间
+				Custom custom = new Custom();
+				custom.setId(userTrip.getVisitCustomId());
+				custom.setVisitLastTime(DateUtil.getDate());
 			}
 			if (handleType==HandleType.update && userTripParam.getIsVisitTimeUpdate()) {
 				UserTripJobUitl.addOrUpdateJob(userTrip,"userTrip");
