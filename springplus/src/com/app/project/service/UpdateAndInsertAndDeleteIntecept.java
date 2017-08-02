@@ -176,7 +176,7 @@ public class UpdateAndInsertAndDeleteIntecept {
 					custom.setAddState(0);
 				}else {
 					//添加默认的字段
-					custom.setAbc(PublicUtil.getShouzimu(custom.getName()));
+					custom.setAbc(StringUtil.valueOf(PublicUtil.getShouzimu(custom.getName())).toUpperCase());
 					custom.setLevel("D");
 					custom.setAddState(1);
 					if (StringUtil.hashText(custom.getBirthDay())) {
