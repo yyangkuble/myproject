@@ -6,9 +6,9 @@
 		select a.id,a.createTime,a.userId,a.visitCustomId,a.mark,a.visitProject,a.visitDate,a.visitTime,a.isWarn,a.visitType,case when a.state=1 and now() > a.visitTime then 0 else a.state end as state ,b.name as customName,b.level as customLevel,UNIX_TIMESTAMP()-cast(UNIX_TIMESTAMP(a.visitTime) as SIGNED INTEGER) as triptimeout from usertrip a join custom b on a.visitCustomId = b.id and a.userId=#{userId} and a.visitDate between #{startTime} and #{endTime} order by a.visitTime
 	</sql>
 	<sql id="userTripById">
-		select a.id,a.createTime,a.userId,a.visitCustomId,a.mark,a.visitProject,a.visitDate,a.visitTime,a.isWarn,a.visitType,case when a.state=1 and now() > a.visitTime then 0 else a.state end as state ,b.name as customName,b.level as customLevel,UNIX_TIMESTAMP()-cast(UNIX_TIMESTAMP(a.visitTime) as SIGNED INTEGER) as triptimeout from usertrip a join custom b on a.visitCustomId = b.id and a.id=#{id}
+		select a.id,a.createTime,a.userId,a.visitCustomId,a.mark,a.visitProject,a.visitDate,a.visitTime,a.isWarn,a.visitType,case when a.state=1 and now() > a.visitTime then 0 else a.state end as state ,b.name as customName,b.level as customLevel,UNIX_TIMESTAMP()-cast(UNIX_TIMESTAMP(a.visitTime) as SIGNED INTEGER) as triptimeout from usertrip a join custom b on a.visitCustomId = b.id and a.id=#{id} order by a.visitTime desc
 	</sql>
 	<sql id="findUserTripByCustomId">
-		select a.id,a.createTime,a.userId,a.visitCustomId,a.mark,a.visitProject,a.visitDate,a.visitTime,a.isWarn,a.visitType,case when a.state=1 and now() > a.visitTime then 0 else a.state end as state,UNIX_TIMESTAMP()-cast(UNIX_TIMESTAMP(a.visitTime) as SIGNED INTEGER) as triptimeout from usertrip a where visitCustomId=#{customId} and state <> 1
+		select a.id,a.createTime,a.userId,a.visitCustomId,a.mark,a.visitProject,a.visitDate,a.visitTime,a.isWarn,a.visitType,case when a.state=1 and now() > a.visitTime then 0 else a.state end as state,UNIX_TIMESTAMP()-cast(UNIX_TIMESTAMP(a.visitTime) as SIGNED INTEGER) as triptimeout from usertrip a where visitCustomId=#{customId} and state <> 1 order by a.visitTime desc
 	</sql>
 </sqls>

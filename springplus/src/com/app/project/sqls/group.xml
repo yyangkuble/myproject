@@ -54,7 +54,7 @@ UNION
 <if if="customName != null">
 	testedname=#{customName} and
 </if>
- testedcustomid in (select distinct a.visitCustomId from usertrip a  where a.userid in(select id from user where groupid = #{groupId}) and visittype='增员' and visitproject in('面谈报名','受训','结训','上岗','关系建立') ))
+ testedcustomid in (select distinct a.visitCustomId from usertrip a  where a.userid in(select id from user where groupid = #{groupId})))
 order by visitCustomId,visitTime
 	</sql>
 	<!-- 通过日志id查询评论 -->
@@ -73,6 +73,9 @@ order by visitCustomId,visitTime
 		</if>
 		<if if="testerName != null">
 			and b.name like '%${testerName}%'
+		</if>
+		<if if="groupId != null">
+			and b.groupId = #{groupId}
 		</if>
 		order by a.id desc
 	</sql>

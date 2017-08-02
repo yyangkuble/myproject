@@ -370,6 +370,7 @@ public class UpdateAndInsertAndDeleteIntecept {
 				Custom custom = new Custom();
 				custom.setId(userTrip.getVisitCustomId());
 				custom.setVisitLastTime(DateUtil.getDate());
+				baseDao.update(custom);
 			}
 			if (handleType==HandleType.update && userTripParam.getIsVisitTimeUpdate()) {
 				UserTripJobUitl.addOrUpdateJob(userTrip,"userTrip");
