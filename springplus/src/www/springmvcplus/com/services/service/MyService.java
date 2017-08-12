@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -17,11 +18,13 @@ import org.springframework.stereotype.Component;
 
 import com.app.project.mode.Group;
 import com.app.project.service.SelectIntecept;
+import com.app.project.service.UpdateAndInsertAndDeleteIntecept;
 import com.app.project.util.Result;
 
 import www.springmvcplus.com.common.SpringMVCPlusArgsConfig;
 import www.springmvcplus.com.dao.BaseDao;
 import www.springmvcplus.com.services.EntityManager;
+import www.springmvcplus.com.services.LogManager;
 import www.springmvcplus.com.util.EntityMake;
 import www.springmvcplus.com.util.FileUtil;
 import www.springmvcplus.com.util.SpringBeanUtil;
@@ -48,6 +51,21 @@ public class MyService {
 	 */
 	public <T> int update(T entity) {
 		return baseDao.update(entity);
+	}
+	public <T> int system_update(T entity,Result result) {
+		UpdateAndInsertAndDeleteIntecept intecept=SpringBeanUtil.getBean(UpdateAndInsertAndDeleteIntecept.class);
+		intecept.saveAndUpdateBefore(entity,result, UpdateAndInsertAndDeleteIntecept.HandleType.update);
+		if (result.getErrorCode()==0) {
+			int count = baseDao.update(entity);
+			if (count != 1) {
+				result.setErrorCode(1);
+			}else {
+				result.setData(baseDao.getModelById(entity));
+			}
+			return count;
+		}
+		intecept.saveAndUpdateEnd(entity,result, UpdateAndInsertAndDeleteIntecept.HandleType.update);
+		return 0;
 	}
 	public int update(String sql) {
 		return baseDao.update(sql);
@@ -80,6 +98,8 @@ public class MyService {
 	 * @param entity
 	 */
 	public <T> int save(T entity) {
+		
+		
 		int count = baseDao.save(entity);
 		if (entity instanceof Group) {
 			Group group = (Group) entity;
@@ -88,6 +108,26 @@ public class MyService {
 		}
 		//select @@IDENTITY
 		return count;
+	}
+	public <T> int system_save(T entity,Result result) {
+		UpdateAndInsertAndDeleteIntecept intecept=SpringBeanUtil.getBean(UpdateAndInsertAndDeleteIntecept.class);
+		intecept.saveAndUpdateBefore(entity,result, UpdateAndInsertAndDeleteIntecept.HandleType.save);
+		if (result.getErrorCode()==0) {
+			int count = baseDao.save(entity);
+			if (entity instanceof Group) {
+				Group group = (Group) entity;
+				String id = baseDao.getSingleResultBySqlId("lastId");
+				group.setId(Integer.valueOf(id));
+			}
+			if (count != 1) {
+				result.setErrorCode(1);
+			}else {
+				result.setData(baseDao.getModelById(entity));
+			}
+			return count;
+		}
+		intecept.saveAndUpdateEnd(entity,result, UpdateAndInsertAndDeleteIntecept.HandleType.save);
+		return 0;
 	}
 	/**
 	 * ����
@@ -402,13 +442,27 @@ public class MyService {
 		for(int j=1;j<=allrow;j++){//从第一行开始，应为0行是标题
 			Map<String, String> map=new TreeMap<String, String>();
 			Row dataRow = sheet.getRow(j);
-			for(int i=0;i<colums_num;i++){
-				if (keys.keySet().contains(i)) {
-					map.put(keys.get(i), dataRow.getCell(i).getStringCellValue());
+			if (dataRow != null) {
+				for(int i=0;i<colums_num;i++){
+					if (keys.keySet().contains(i)) {
+						if (dataRow.getCell(i) != null) {
+							dataRow.getCell(i).setCellType(CellType.STRING);
+						}
+						map.put(keys.get(i), dataRow.getCell(i)==null?null:dataRow.getCell(i).getStringCellValue());
+					}
+				}
+				boolean isallnull=true;
+				for (String value : map.values()) {
+					if (value != null && !value.trim().equals("")) {
+						isallnull =false;
+						break;
+					}
+				}
+				if (isallnull == false) {
+					Object baseEntity = EntityMake.makeModeByRequest(map, c);
+					result+=system_save(baseEntity, new Result());
 				}
 			}
-			Object baseEntity = EntityMake.makeModeByRequest(map, c);
-			result+=baseDao.save(baseEntity);
 		}
 		return result;
 	}

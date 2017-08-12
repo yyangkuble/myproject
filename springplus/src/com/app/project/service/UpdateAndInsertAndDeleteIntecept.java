@@ -40,6 +40,7 @@ import com.app.project.mode.User;
 import com.app.project.mode.UserCarPolicyLog;
 import com.app.project.mode.UserFriendsAsk;
 import com.app.project.mode.UserImgsShare;
+import com.app.project.mode.UserPlan;
 import com.app.project.mode.UserTrip;
 import com.app.project.mode.UserVisitLog;
 import com.app.project.util.Getui;
@@ -62,6 +63,14 @@ public class UpdateAndInsertAndDeleteIntecept {
 				field.set(entity, DateUtil.getDate());
 			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 				// TODO Auto-generated catch block
+			}
+		}
+		if (entity instanceof UserPlan) {
+			UserPlan userPlan=(UserPlan) entity;
+			Integer countInteger = Integer.valueOf(baseDao.getSingleResult("select count(*) from UserPlan where customId='"+userPlan.getCustomId()+"' and plandate='"+userPlan.getPlanDate()+"'"));
+			if (countInteger > 0) {
+				result.setErrorCode(1);
+				result.setErrorMessage("重复添加");
 			}
 		}
 		if (entity instanceof CustomImportanceDay) {

@@ -10,6 +10,9 @@
 	<sql id="login">
 		select  a.*,case when a.vipTimeEnd > now() then case when a.userLevel=1 then 1 else 2 end else  case when a.userLevel=1 then 4 else 3 end end as userState from user a where a.tel = #{tel} and a.password=#{password}
 	</sql>
+	<sql id="getPublicUser">
+		select  a.*,case when a.vipTimeEnd > now() then case when a.userLevel=1 then 1 else 2 end else  case when a.userLevel=1 then 4 else 3 end end as userState from user a where a.userlevel = 3
+	</sql>
 	<!-- 通过电话查询用户id -->
 	<sql id="findUserById">
 		select a.*,b.groupName,b.rongCloudGroupId,case when a.vipTimeEnd > now() then case when a.userLevel=1 then 1 else 2 end else  case when a.userLevel=1 then 4 else 3 end end as userState from user a left join group_ b on a.groupid=b.id where a.id=#{id}

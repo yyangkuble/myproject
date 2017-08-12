@@ -81,22 +81,11 @@ public class AESSystemAction {
 	@RequestMapping(method=RequestMethod.POST,value="/save/{entityName}")
 	public void insert(HttpServletRequest request,HttpServletResponse response,@PathVariable("entityName") String entityName) {
 		String classpath=EntityRootPakage.getRootPackage(entityName)+entityName;
-		UpdateAndInsertAndDeleteIntecept intecept=SpringBeanUtil.getBean(UpdateAndInsertAndDeleteIntecept.class);
 		Result result = new Result();
 		System.out.println("初始化:"+classpath);
 		try {
 			Object baseEntity = AESUtil.converEntity(request, Class.forName(classpath));
-			intecept.saveAndUpdateBefore(baseEntity,result, UpdateAndInsertAndDeleteIntecept.HandleType.save);
-			if (result.getErrorCode()==0) {
-				int count = myService.save(baseEntity);
-				if (count != 1) {
-					result.setErrorCode(1);
-				}else {
-					result.setData(myService.getModelById(baseEntity));
-				}
-				LogManager.saveLog(request, myService);
-				intecept.saveAndUpdateEnd(baseEntity,result, UpdateAndInsertAndDeleteIntecept.HandleType.save);
-			}
+			myService.system_save(baseEntity, result);
 			ResponseUtil.print(response, result);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -106,22 +95,14 @@ public class AESSystemAction {
 	@RequestMapping(method=RequestMethod.POST,value="/update/{entityName}")
 	public void update(HttpServletRequest request,HttpServletResponse response,@PathVariable("entityName") String entityName) {
 		String classpath=EntityRootPakage.getRootPackage(entityName)+entityName;
-		UpdateAndInsertAndDeleteIntecept intecept=SpringBeanUtil.getBean(UpdateAndInsertAndDeleteIntecept.class);
+		
 		Result result = new Result();
 		System.out.println("初始化:"+classpath);
 		try {
 			Object baseEntity = AESUtil.converEntity(request, Class.forName(classpath));
-			intecept.saveAndUpdateBefore(baseEntity,result, UpdateAndInsertAndDeleteIntecept.HandleType.update);
-			if (result.getErrorCode()==0) {
-				int count = myService.update(baseEntity);
-				if (count != 1) {
-					result.setErrorCode(1);
-				}else {
-					result.setData(myService.getModelById(baseEntity));
-				}
-				LogManager.saveLog(request, myService);
-				intecept.saveAndUpdateEnd(baseEntity,result, UpdateAndInsertAndDeleteIntecept.HandleType.update);
-			}
+			
+			myService.system_update(baseEntity, result);
+			
 			ResponseUtil.print(response, result);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block

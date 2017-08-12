@@ -32,6 +32,7 @@ public class SqlMake {
 		}
 		String result = null;
 		try {
+			System.out.println("初始化sqlId："+sqlId);
 			result = (String) XmlSqlParse.engine.eval(sqlId+"("+JSON.toJSONString(map)+")");
 			result= sqlwhere(result);
 		} catch (ScriptException e) {
@@ -45,6 +46,7 @@ public class SqlMake {
 		Map<String, String> map=new HashMap<>();
 		String result = null;
 		try {
+			System.out.println("初始化sqlId："+sqlId);
 			result = (String) XmlSqlParse.engine.eval(sqlId+"("+JSON.toJSONString(map)+")");
 			result= sqlwhere(result);
 		} catch (ScriptException e) {
@@ -56,6 +58,7 @@ public class SqlMake {
 	public static SqlResult makeSql(Map<String, String> map,String sqlId) {
 		String result = null;
 		try {
+			System.out.println("初始化sqlId："+sqlId);
 			result = (String) XmlSqlParse.engine.eval(sqlId+"("+JSON.toJSONString(map)+")");
 			result= sqlwhere(result);
 		} catch (ScriptException e) {

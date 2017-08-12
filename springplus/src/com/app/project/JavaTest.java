@@ -26,8 +26,12 @@ public class JavaTest {
 	@Test
 	public void registUser() throws Exception {
 		Map<String, String> map=new HashMap<>();
-		map.put("tel", "12345789");
-		map.put("name", "宋荣洋1");
+		map.put("tel", "10001");
+		map.put("name", "体验者2");
+		map.put("password", "10001");
+		map.put("company", "体验科技");
+		map.put("job", "体验总监");
+		map.put("userLevel", "3");
 		String body = TestUtil.aesTest("user/regist", map);
 		System.out.println(body);
 	}

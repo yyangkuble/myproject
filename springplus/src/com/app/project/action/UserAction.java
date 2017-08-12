@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSON;
 import com.app.project.mode.Group;
 import com.app.project.mode.User;
 import com.app.project.mode.UserFriendsAsk;
+import com.app.project.mode.UserTest;
 import com.app.project.mode.UserTrip;
 import com.app.project.mode.UserVisitLog;
 import com.app.project.service.UpdateAndInsertAndDeleteIntecept.HandleType;
@@ -73,7 +74,7 @@ public class UserAction {
 					user.setRealName("");
 				}
 			}
-			user.setUserLevel(1);
+			//user.setUserLevel(1);
 			result.setData(user);
 		}
 		try {
@@ -83,7 +84,36 @@ public class UserAction {
 			e.printStackTrace();
 		}
 	}
-	
+	Integer userCount=0;
+	@RequestMapping("/getPublicUser")
+	public void getPublicUser(HttpServletRequest request,HttpServletResponse response) {
+		Map<String, String> parameter = AESUtil.converParameter(request);
+		UserTest userTest= new UserTest();
+		userTest.setCreateTime(DateUtil.getDate());
+		userTest.setName(parameter.get("name"));
+		userTest.setTel(parameter.get("tel"));
+		myService.save(userTest);
+		List<User> users = myService.getListModelsBySqlId("getPublicUser", User.class);
+		Result result = new Result();
+		userCount++;
+		if (userCount>=users.size()) {
+			userCount=0;
+		}
+		User user = users.get(userCount);
+		
+		if (StringUtil.hashText(user.getGroupId())) {
+			Group group = myService.getModel("select * from group_ where id = "+user.getGroupId(),Group.class);
+			user.setRongCloudGroupId(group.getRongCloudGroupId());
+			user.setGroupName(group.getGroupName());
+			if (!StringUtil.hashText(user.getZhifubao())) {
+				user.setZhifubao("");
+				user.setRealName("");
+			}
+		}
+		user.setUserState(5);
+		result.setData(user);
+		ResponseUtil.print(response, result);
+	}
 	@RequestMapping("/loginpc")
 	public void loginpc(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		Map<String, String> parameter=new HashMap<>();
@@ -287,14 +317,6 @@ public class UserAction {
 		ResponseUtil.print(response, result);
 	}
 	
-	public static void main(String[] args) {
-		Map<String, String> paramters=new HashMap<>();
-		paramters.put("tel", "12345678912");
-		paramters.put("password", "123456");
-		String jsonText = MyJSON.toJSONString(paramters);
-		//接下来对jsonText进行aes加密，具体如何加密，Android联系宋荣洋，ios联系沈震
-		//将加密后的文本，使用p字段传参给后台即可
-	}
 	
 	
 }

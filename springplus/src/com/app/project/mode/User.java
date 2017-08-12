@@ -37,7 +37,7 @@ public class User {
 	@Transient
 	@ApiDesc("融云groupId")
 	String rongCloudGroupId;
-	@ApiDesc("用户类别， 1：试用用户   2：vip用户")
+	@ApiDesc("用户类别， 1：试用用户   2：vip用户  3: 体验版账号")
 	Integer userLevel;
 	@Transient
 	Integer userState;//用户状态  1：试用用户   2：vip用户  3：vip过期用户  4：试用结束 未支付vip

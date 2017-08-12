@@ -295,10 +295,14 @@ public class EntityManager {
 		T t=null;
 			try {
 				t = class1.newInstance();
-				for (String attrName : thiscolumnMap.keySet()) {
-					Field field = class1.getDeclaredField(attrName);
+				Field[] fields = class1.getDeclaredFields();
+				for (Field field : fields) {
 					field.setAccessible(true);
-					field.set(t, SqlUtil.caseType(field.getType(),map.get(thiscolumnMap.get(attrName))));
+					String columName=thiscolumnMap.get(field.getName());
+					if (columName==null) {
+						columName=field.getName();
+					}
+					field.set(t, SqlUtil.caseType(field.getType(),map.get(columName)));
 				}
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
@@ -306,10 +310,7 @@ public class EntityManager {
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (NoSuchFieldException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SecurityException e) {
+			}  catch (SecurityException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

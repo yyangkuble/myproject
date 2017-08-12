@@ -300,7 +300,7 @@ public class SystemAction {
 			e.printStackTrace();
 		}
 	}
-	@RequestMapping(method=RequestMethod.POST,value="/insert/{entityName}/byexcel")
+	@RequestMapping(value="/insert/{entityName}/byexcel")
 	public void insertByExcel(HttpServletRequest request,HttpServletResponse response,@PathVariable("entityName") String entityName) {
 		String classpath=EntityRootPakage.getRootPackage(entityName)+entityName;
 		String excelPath=request.getParameter("excelPath");
