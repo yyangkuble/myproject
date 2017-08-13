@@ -43,7 +43,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
    					<div>
    						<img src="${user.imgUrl }" style="width: 52px; height: 52px;border-radius:50%;margin-left: 35px;">
    					</div>
-   					<div style="height: 52px;padding-left: 10px;font-size: 1.1em;" class="ymiddle">${ user.name }: 让我们一起成为保险大咖吧！ </div>
+   					<div style="height: 52px;padding-left: 10px;font-size: 1.1em;" class="ymiddle">${ user.name }: 让我们一起加入保险智库吧！ </div>
    				</div>
    			</div>
    			<div class="imgall" style="height:130px;background-image: url('resource/imgs/baoxian/08.png');width: calc(100% - 40px);margin-left: 20px;margin-top: 30px;">
@@ -66,7 +66,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
    		<div class="imgall" style="height:290px;background-image: url('resource/imgs/baoxian/05.png');width: calc(100% - 80px);margin-left: 40px;margin-top: 180px;">
    			<div style="height: 110px;"></div>
    			<div style="padding-left: 40px;padding-right: 40px;">
-   				<span>您已经接受${user.name }的邀请，马上下载保险大咖APP开通会员，即可获得现金奖励</span>
+   				<span>您已经接受${user.name }的邀请，马上下载保险智库APP开通会员，即可获得现金奖励</span>
    			</div>
    			<div><img src="resource/imgs/baoxian/07.png" style="width: 60%; margin-left: 20%;margin-top: 30px;" onclick="queren()"></div>
    		</div>

@@ -226,8 +226,8 @@ public class AlipayAction {
 				body="您发表的问题将不公开";
 				total_fee="0.01";
 			}else if (payType.equals("3")) {//2:发表大咖问题 公开 5元 3：发表大咖问题 不公开 20元， 4：聆听大咖回答 1元
-				title="向保险大咖提出您的疑问";
-				body="向保险大咖提出您的疑问";
+				title="向保险智库提出您的疑问";
+				body="向保险智库提出您的疑问";
 				total_fee="0.01";
 			}else if (payType.equals("4")) {
 				userPayLog.setBiz_id(biz_id);
@@ -287,8 +287,8 @@ public class AlipayAction {
 				payBizInfo.setSubjec("保险智库不公开提问题");
 				payBizInfo.setTotal_amount("0.01");
 			}else if (payType.equals("3")) {//2:发表大咖问题 公开 5元 3：发表大咖问题 不公开 20元， 4：聆听大咖回答 1元
-				payBizInfo.setBody("向保险大咖提出您的疑问");//商品描述
-				payBizInfo.setSubjec("向保险大咖提出您的疑问");
+				payBizInfo.setBody("向保险智库提出您的疑问");//商品描述
+				payBizInfo.setSubjec("向保险智库提出您的疑问");
 				payBizInfo.setTotal_amount("0.01");
 			}else if (payType.equals("4")) {
 				payBizInfo.setBody("聆听大咖回答的问题");//商品描述

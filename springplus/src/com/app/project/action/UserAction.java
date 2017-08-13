@@ -168,7 +168,9 @@ public class UserAction {
 				user.setWifiVideo(1);
 				user.setMoney(0.00);
 				user.setHistoryMoney(0.00);
-				user.setUserLevel(1);//试用用户
+				if (user.getUserLevel() ==null) {
+					user.setUserLevel(1);//试用用户
+				}
 				user.setCustomLevelChange(1);//客户自动升级
 				user.setCustomWarn(1);//客户自动升级提醒
 				//试用7天
