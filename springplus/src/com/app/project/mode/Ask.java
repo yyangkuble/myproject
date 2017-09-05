@@ -27,9 +27,15 @@ public class Ask {
 	Integer answerCount;//回答的数量
 	Integer allYesCount;//全部赞的累积
 	String createTime;
+	Integer readcount;//阅读数量
 	
 	
-	
+	public Integer getReadcount() {
+		return readcount;
+	}
+	public void setReadcount(Integer readcount) {
+		this.readcount = readcount;
+	}
 	public String getCreateTime() {
 		return createTime;
 	}

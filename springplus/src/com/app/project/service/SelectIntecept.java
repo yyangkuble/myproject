@@ -36,6 +36,9 @@ public class SelectIntecept {
 				parameter.put("whimEnd", StringUtil.valueOf(Integer.valueOf(whim.split("-")[1])*10000));
 			}
 		}
+		if (sqlId.equals("answerList")) {
+			baseDao.update("update ask set readcount=readcount+1 where id='"+parameter.get("askId")+"'");
+		}
 	}
 	/**
 	 * 有可能是map，有可能是listmap

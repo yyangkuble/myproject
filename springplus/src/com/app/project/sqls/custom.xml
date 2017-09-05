@@ -64,6 +64,9 @@ C3客户筛选
 			if(relationship != null){
 				<text>and relationship=#{relationship}</text>
 			}
+			if(orderType == 'visitLateTime'){
+				<text>and visitLastTime between '1989-11-22 11:22:11' and now() </text>
+			}
 		</script>
 		<script>
 			if(orderType != null){

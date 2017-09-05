@@ -48,6 +48,10 @@ public class IndexAction {
 		request.setAttribute("share", userImgsShare);
 		return "share";
 	}
+	@RequestMapping("/jiaoxue")
+	public String jiaoxue() {
+		return "jiaoxue";
+	}
 	
 	@RequestMapping("/")
 	public String index(HttpServletRequest request,HttpServletResponse response) {

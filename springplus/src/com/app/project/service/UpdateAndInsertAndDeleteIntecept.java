@@ -106,6 +106,7 @@ public class UpdateAndInsertAndDeleteIntecept {
 			Ask ask = (Ask) entity;
 			ask.setAllYesCount(0);
 			ask.setAnswerCount(0);
+			ask.setReadcount(0);
 		}
 		if (entity instanceof Answer && handleType == HandleType.save) {
 			Answer answer = (Answer) entity;
@@ -192,6 +193,14 @@ public class UpdateAndInsertAndDeleteIntecept {
 						custom.setAge(PublicUtil.getAge(custom.getBirthDay()));
 						custom.setZodiac(PublicUtil.getConstellation(custom.getBirthDay()));
 					}
+				}
+			}else {
+				if (StringUtil.hashText(custom.getBirthDay())) {
+					custom.setAge(PublicUtil.getAge(custom.getBirthDay()));
+					custom.setZodiac(PublicUtil.getConstellation(custom.getBirthDay()));
+				}
+				if (custom.getName() != null) {
+					custom.setAbc(StringUtil.valueOf(PublicUtil.getShouzimu(custom.getName())).toUpperCase());
 				}
 			}
 			
@@ -289,10 +298,11 @@ public class UpdateAndInsertAndDeleteIntecept {
 			UserCarPolicyLog userCarPolicyLog = (UserCarPolicyLog) result.getData();
 			userCarPolicyLog.setCustomName(baseDao.getSingleResult("select name from custom where id ='"+userCarPolicyLog.getCustomId()+"'"));
 			userCarPolicyLog.setCreateTime(userCarPolicyLog.getCreateTime().substring(0, 10));
-			UserCarPolicyLog useCarPolicyLogparam = (UserCarPolicyLog) entity;
+			/*UserCarPolicyLog useCarPolicyLogparam = (UserCarPolicyLog) entity;
 			if (StringUtil.hashText(useCarPolicyLogparam.getImgurl())) {
 				baseDao.update("update custom set imgUrls=imgUrls++CAST(',"+useCarPolicyLogparam.getImgurl()+"' as char) where id='"+useCarPolicyLogparam.getCustomId()+"'");
-			}
+			}*/
+			baseDao.update("update custom set carExpireDate='"+userCarPolicyLog.getCarExpireTime()+"' where id='"+userCarPolicyLog.getCustomId()+"'");
 		}
 		if (entity instanceof GroupJournal) {
 			GroupJournal groupJournal = (GroupJournal) result.getData();
@@ -364,6 +374,7 @@ public class UpdateAndInsertAndDeleteIntecept {
 		}
 		
 		if (entity instanceof UserTrip) {
+			System.out.println("---------------------------");
 			UserTrip userTripParam=(UserTrip) entity;
 			UserTrip userTrip = (UserTrip) result.getData();
 			Map<String, Object> map = baseDao.getMap("select b.name as customName,b.level as customLevel,UNIX_TIMESTAMP()-cast(UNIX_TIMESTAMP(a.visitTime) as SIGNED INTEGER) as triptimeout from usertrip a join custom b on a.visitCustomId = b.id where a.id = '"+userTrip.getId()+"'");
@@ -375,11 +386,6 @@ public class UpdateAndInsertAndDeleteIntecept {
 				if (userTrip.getIsWarn()==1) {
 					UserTripJobUitl.addOrUpdateJob(userTrip,"userTrip");
 				}
-				//更新最后一次拜访的时间
-				Custom custom = new Custom();
-				custom.setId(userTrip.getVisitCustomId());
-				custom.setVisitLastTime(DateUtil.getDate());
-				baseDao.update(custom);
 			}
 			if (handleType==HandleType.update && userTripParam.getIsVisitTimeUpdate()) {
 				UserTripJobUitl.addOrUpdateJob(userTrip,"userTrip");
@@ -409,7 +415,16 @@ public class UpdateAndInsertAndDeleteIntecept {
 	}
 	
 	public void deleteBefore(Object entity,Result result) {
-		
+		if (entity instanceof UserTrip) {
+			UserTrip userTrip = baseDao.getModel("select * from usertrip where id='"+((UserTrip)entity).getId()+"'", UserTrip.class);
+			if (userTrip !=null) {
+				//更新最后一次拜访的时间
+				Custom custom1 = new Custom();
+				custom1.setId(userTrip.getVisitCustomId());
+				custom1.setVisitLastTime(baseDao.getSingleResult("select max(visittime) from usertrip where visitcustomId ='"+userTrip.getVisitCustomId()+"' and state >= 2 and id <> '"+((UserTrip)entity).getId()+"'"));
+				baseDao.update(custom1);
+			}
+		}
 	}
 	/**
 	 * sqlId

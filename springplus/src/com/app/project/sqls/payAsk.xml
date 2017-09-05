@@ -29,7 +29,11 @@
 	<!-- 问答 -->
 	<!-- 问答的列表 -->
 	<sql id="askList">
-		select a.id as askId,a.imgUrls as askImgUrls,a.title as askTitle,a.context as askContext,a.answerCount,a.allYesCount,a.createTime as askCreateTime,b.id as answerId,b.answerType,b.createTime as answerCreateTime,b.voiceTime as answerVoiceTime,b.yesCount as answerYesCount,b.fileUrls as answerFileUrl,b.context as answerContext,b.commentCount as answerCommentCount,c.imgUrl as askUserImgUrl,c.name as askUserName,d.imgUrl as answerUserImgUrl,d.name as answerUserName,d.iszhuanjia from ask a left join answer b on a.bestAnswerId=b.id join user c on a.userId=c.id left join user d on b.userId=d.id 
+		select a.readcount,a.id as askId,a.imgUrls as askImgUrls,a.title as askTitle,a.context as askContext,a.answerCount,a.allYesCount,a.createTime as askCreateTime,b.id as answerId,b.answerType,b.createTime as answerCreateTime,b.voiceTime as answerVoiceTime,b.yesCount as answerYesCount,b.fileUrls as answerFileUrl,b.context as answerContext,b.commentCount as answerCommentCount,c.imgUrl as askUserImgUrl,c.name as askUserName,d.imgUrl as answerUserImgUrl,d.name as answerUserName,d.iszhuanjia,c.company as askCompany,c.job as askJob
+		from ask a 
+		left join answer b on a.bestAnswerId=b.id 
+		join user c on a.userId=c.id 
+		left join user d on b.userId=d.id 
 		where 1=1
 		<if if="askType != null">
 			and a.askType=#{askType}

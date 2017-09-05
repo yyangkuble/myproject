@@ -64,32 +64,37 @@ public class PublicUtil {
 	} 
 	   //由出生日期获得年龄  
     public static int getAge(String birthdayStr) {  
-    	Date birthDay = DateUtil.dateFormat(birthdayStr, "yyyy-MM-dd");
-        Calendar cal = Calendar.getInstance();  
-  
-        if (cal.before(birthDay)) {  
-            throw new IllegalArgumentException(  
-                    "The birthDay is before Now.It's unbelievable!");  
-        }  
-        int yearNow = cal.get(Calendar.YEAR);  
-        int monthNow = cal.get(Calendar.MONTH);  
-        int dayOfMonthNow = cal.get(Calendar.DAY_OF_MONTH);  
-        cal.setTime(birthDay);  
-  
-        int yearBirth = cal.get(Calendar.YEAR);  
-        int monthBirth = cal.get(Calendar.MONTH);  
-        int dayOfMonthBirth = cal.get(Calendar.DAY_OF_MONTH);  
-  
-        int age = yearNow - yearBirth;  
-  
-        if (monthNow <= monthBirth) {  
-            if (monthNow == monthBirth) {  
-                if (dayOfMonthNow < dayOfMonthBirth) age--;  
-            }else{  
-                age--;  
+    	try {
+    		Date birthDay = DateUtil.dateFormat(birthdayStr, "yyyy-MM-dd");
+            Calendar cal = Calendar.getInstance();  
+      
+            if (cal.before(birthDay)) {  
+                throw new IllegalArgumentException(  
+                        "The birthDay is before Now.It's unbelievable!");  
             }  
-        }  
-        return age;  
+            int yearNow = cal.get(Calendar.YEAR);  
+            int monthNow = cal.get(Calendar.MONTH);  
+            int dayOfMonthNow = cal.get(Calendar.DAY_OF_MONTH);  
+            cal.setTime(birthDay);  
+      
+            int yearBirth = cal.get(Calendar.YEAR);  
+            int monthBirth = cal.get(Calendar.MONTH);  
+            int dayOfMonthBirth = cal.get(Calendar.DAY_OF_MONTH);  
+      
+            int age = yearNow - yearBirth;  
+      
+            if (monthNow <= monthBirth) {  
+                if (monthNow == monthBirth) {  
+                    if (dayOfMonthNow < dayOfMonthBirth) age--;  
+                }else{  
+                    age--;  
+                }  
+            }  
+            return age;  
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	return -1;
     } 
     
     public static TokenResult getRongyunToken(String userid,String username,String imgurl) {

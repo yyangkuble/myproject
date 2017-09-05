@@ -1,5 +1,6 @@
 package www.springmvcplus.com.services;
 
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -8,11 +9,14 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.app.project.mode.Custom;
 import com.app.project.service.PublicService;
+import com.app.project.util.Result;
 
 import www.springmvcplus.com.common.ApiInit;
 import www.springmvcplus.com.common.SpringMVCPlusArgsConfig;
 import www.springmvcplus.com.common.XmlSqlParse;
+import www.springmvcplus.com.services.service.MyService;
 import www.springmvcplus.com.util.LogUtil;
 import www.springmvcplus.com.util.MyTask;
 import www.springmvcplus.com.util.SpringBeanUtil;
@@ -62,6 +66,11 @@ public class AppFastInit implements ApplicationListener<ContextRefreshedEvent>  
 		//初始化任务
 		PublicService publicService = SpringBeanUtil.getBean(PublicService.class);
 		publicService.initJobs();
+		/*MyService myService = SpringBeanUtil.getBean(MyService.class);
+		List<Custom> listModels = myService.getListModels(Custom.class);
+		for (Custom custom : listModels) {
+			myService.system_update(custom, new Result());
+		}*/
 	}
 	
 

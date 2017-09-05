@@ -14,11 +14,17 @@
 	</sql>
 	<!-- 小秘书提醒 车险到期-->
 	<sql id="secretaryRemindCar">
-		select * from(select id,name,carExpireDate,date_sub(carExpireDate,interval 3 month) as toubaoDate,datediff(curdate(),date_sub(date_sub(carExpireDate,interval 3 month),interval 7 day)) as daycount,'2' as remindType from custom where userId=#{userId}) aa where daycount >=0
+		select * from(select id,name,carExpireDate,date_sub(carExpireDate,interval 3 month) as toubaoDate,datediff(date_sub(carExpireDate,interval 3 month),curdate()) as daycount,date_sub(date_sub(carExpireDate,interval 3 month),interval 7 day) as startDate,date_sub(date_sub(carExpireDate,interval 2 month),interval 7 day) as endDate,'2' as remindType from custom where userId=#{userId}) aa where now() between startDate and endDate
+		<!-- 
+		select * from(select id,name,carExpireDate,date_sub(carExpireDate,interval 3 month) as toubaoDate,datediff(date_sub(carExpireDate,interval 3 month),curdate()) as daycount,datediff(curdate(),date_sub(date_sub(carExpireDate,interval 3 month),interval 7 day)) as daycount2,'2' as remindType from custom where userId=#{userId}) aa where daycount2 >=0 and daycount2 <=14
+		 -->
 	</sql>
 	<!-- 小秘书提醒 纪念日-->
 	<sql id="secretaryRemindImportanceday">
-		select * from (select a.id,a.name,b.day,b.context,datediff(curdate(),concat(DATE_FORMAT(NOW(), '%Y'),right(b.day,6))) as daycount,'3' as remindType from custom a join customimportanceday b on a.id=b.customId where a.userId=#{userId}) aa where daycount<4
+		select * from (select a.id,a.name,b.day,b.context,datediff(concat(DATE_FORMAT(NOW(), '%Y'),right(b.day,6)),curdate()) as daycount,'3' as remindType from custom a join customimportanceday b on a.id=b.customId where a.userId=#{userId}) aa where daycount between 0 and 7
+		<!-- 
+			select * from(select id,name,carExpireDate,date_sub(carExpireDate,interval 3 month) as toubaoDate,datediff(date_sub(carExpireDate,interval 3 month),curdate()) as daycount,date_sub(carExpireDate,interval 2 month) as startDate,date_sub(carExpireDate,interval -7 day) as endDate,'2' as remindType from custom where userId='201706061110592710') aa where now() between startDate and endDate
+		 -->
 	</sql>
 	<!-- 建议拜访的客户 -->
 	<sql id="proposalVisitCustom">
@@ -34,13 +40,13 @@
 				<text>select id,name,age,imgPathSmall from custom where userId=#{userId} and age between 40 and 54 order by age</text>
 			}else if(type=='family'){
 				<!-- 家庭保单需求 -->
-				<text>select id,name,age,imgPathSmall from custom where userId=#{userId} and age between 30 and 39 order by age</text>
+				<text>select id,name,age,imgPathSmall from custom where userId=#{userId} and age between 30 and 40 order by age</text>
 			}else if(type=='longVisit'){
 				<!-- 久未拜访 -->
 				<text>select * from (select aa.*,bb.id,bb.name,bb.imgPathSmall,datediff(curdate(),aa.visitTime) as daysnovisit from (select a.visitCustomId,max(a.visitTime) as visittime from usertrip a where userid=#{userId} and a.state in(2,3) group by a.visitCustomId) aa join custom bb on aa.visitCustomId = bb.id) aaa where aaa.daysnovisit > 90 order by aaa.daysnovisit desc</text>
 			}else if(type=='custionData'){
 				<!-- 资料收集 -->
-				<text>select * from custom where birthDay is null or birthDay ='' and userid = #{userId}</text>
+				<text>select * from custom where (birthDay is null or birthDay ='') and userid = #{userId}</text>
 			}else if(type=='plan'){
 				<!-- 资料收集 -->
 				<text>

@@ -326,9 +326,16 @@ public class BaseAction {
 	public void changeUserTripState(HttpServletRequest request,HttpServletResponse response) {
 		Map<String, String> map = AESUtil.converParameter(request);
 		String userTripId = map.get("userTripId");
-		myService.update("update usertrip set state=3 where id='"+userTripId+"'");//标记完成
+		myService.update("update usertrip set state=2 where id='"+userTripId+"'");//标记完成
 			User user = myService.getModel("select customWarn,customLevelChange from user where id=(select userId from UserTrip where id='"+userTripId+"')", User.class);
 			UserTrip userTrip = myService.getModel("select * from usertrip where id='"+userTripId+"'", UserTrip.class);
+			
+			//更新最后一次拜访的时间
+			Custom custom1 = new Custom();
+			custom1.setId(userTrip.getVisitCustomId());
+			custom1.setVisitLastTime(myService.getSingleResult("select max(visittime) from usertrip where visitcustomId ='"+userTrip.getVisitCustomId()+"' and state >= 2"));
+			myService.update(custom1);
+			
 			Custom custom = myService.getModel("select level,name from custom where id='"+userTrip.getVisitCustomId()+"'",Custom.class);
 			String customLevel=custom.getLevel();
 			String customName=custom.getName();
@@ -339,39 +346,48 @@ public class BaseAction {
 				userTrip.setCustomWarn(StringUtil.valueOf(user.getCustomWarn()));//标记是否提醒
 				String visitProject=StringUtil.valueOf(userTrip.getVisitProject());
 				if (customLevel.equals("D")) {
-					if (visitProject.equals("自定义") && visitProject.equals("关系建立")) {
+					if (visitProject.equals("自定义") || visitProject.equals("关系建立")) {
 						myService.update("update custom set level='C' where id='"+userTrip.getVisitCustomId()+"'");
 						userTrip.setCustomLevel("C");
-					}
-					if (visitProject.equals("需求分析")) {
+					}else if (visitProject.equals("需求分析")) {
 						myService.update("update custom set level='B' where id='"+userTrip.getVisitCustomId()+"'");
 						userTrip.setCustomLevel("B");
-					}
-					if (visitProject.equals("建议书与促成")) {
+					}else if (visitProject.equals("建议书与促成")) {
 						myService.update("update custom set level='A' where id='"+userTrip.getVisitCustomId()+"'");
 						userTrip.setCustomLevel("A");
+					}else if (visitProject.equals("约访") || visitProject.equals("送保单与签收")) {
+						//不修改
+						userTrip.setCustomWarn("0");
+					} else{//自定义的修改为C
+						myService.update("update custom set level='C' where id='"+userTrip.getVisitCustomId()+"'");
+						userTrip.setCustomLevel("C");
 					}
 				}
 				if (customLevel.equals("C")) {
 					if (visitProject.equals("需求分析")) {
 						myService.update("update custom set level='B' where id='"+userTrip.getVisitCustomId()+"'");
 						userTrip.setCustomLevel("B");
-					}
-					if (visitProject.equals("建议书与促成")) {
+					}else if (visitProject.equals("建议书与促成")) {
 						myService.update("update custom set level='A' where id='"+userTrip.getVisitCustomId()+"'");
 						userTrip.setCustomLevel("A");
+					}else {
+						userTrip.setCustomWarn("1");
 					}
 				}
 				if (customLevel.equals("B")) {
 					if (visitProject.equals("建议书与促成")) {
 						myService.update("update custom set level='A' where id='"+userTrip.getVisitCustomId()+"'");
 						userTrip.setCustomLevel("A");
+					}else {
+						userTrip.setCustomWarn("1");
 					}
 				}
 				if (customLevel.equals("A")) {
 					if (visitProject.equals("送保单与签收")) {
 						myService.update("update custom set level='C' where id='"+userTrip.getVisitCustomId()+"'");
 						userTrip.setCustomLevel("C");
+					}else {
+						userTrip.setCustomWarn("1");
 					}
 				}
 			}
@@ -391,9 +407,9 @@ public class BaseAction {
 			resultLog.setComment("未觉醒的人才");
 		}else if (resultLog.getScore()>=14 && resultLog.getScore()<=17) {
 			resultLog.setComment("可造之才");
-		}else if (resultLog.getScore()>=18 && resultLog.getScore()<=19) {
+		}else if (resultLog.getScore()>=18 && resultLog.getScore()<=20) {
 			resultLog.setComment("业务高手");
-		}else if (resultLog.getScore()>=20 && resultLog.getScore()<=22) {
+		}else if (resultLog.getScore()>=21 && resultLog.getScore()<=22) {
 			resultLog.setComment("天生好手");
 		}else {
 			resultLog.setComment("万中选一");

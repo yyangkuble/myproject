@@ -2,7 +2,12 @@
 <sqls modeName="用户" xmlns="http://www.springmvcplus.com/schema/sql" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.springmvcplus.com/schema/sql sql.xsd">
 	<!-- 查询最新公告 -->
 	<sql id="findNewGroupNotice">
+	<!-- 
 		select * from GroupNotice where groupId=#{groupId} order by id desc limit 0,1
+	 -->
+		select * from
+(select * from GroupNotice where groupId=#{groupId} order by id desc limit 0,1) aa,
+(select allusercount,isreadcount,allusercount-isreadcount as noreadcount from (select count(*) as allusercount from user where groupid=(select groupId from groupnotice where id=(select id from GroupNotice where groupId=#{groupId} order by id desc limit 0,1))) a,(select count(distinct userid) as isreadcount from groupnoticelog where groupNoticeId=(select id from GroupNotice where groupId=#{groupId} order by id desc limit 0,1)) b) bb
 	</sql>
 	<!-- 查询所有公告 -->
 	<sql id="findGroupNotice">
@@ -17,8 +22,9 @@
 	</sql>
 	<!-- 通过团队id查询团队信息 -->
 	<sql id="selectGroupAllUser">
-		select u.id as userid,u.imgUrl,u.groupId,u.tel,u.name as username,u.groupAuth,g.groupName,g.createTime 
-		from user u,group_ g where u.groupId=g.id and g.id=#{groupId} order by u.groupAuth
+		select u.id as userid,u.imgUrl,u.groupId,u.tel,u.name as username,u.groupAuth,g.groupName,g.createTime ,
+		concat(b.policyNumber,'/',b.premium) as yeji
+		from user u left join useryeji b on u.id=b.userId and b.yejiDate=left(now(),7),group_ g where u.groupId=g.id and g.id=#{groupId} order by u.groupAuth
 	</sql>
 	<!-- 查询团队基本信息 -->
 	<sql id="selectGroupInfo">

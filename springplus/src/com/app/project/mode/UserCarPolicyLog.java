@@ -28,7 +28,6 @@ public class UserCarPolicyLog {
 	String carExpireTime;
 	@Transient
 	String customName;
-	@Transient
 	String imgurl;
 	
 	public String getImgurl() {

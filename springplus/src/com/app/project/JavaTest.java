@@ -298,4 +298,7 @@ public class JavaTest {
 		String body = TestUtil.aesTest("save/GroupTrip", map);
 		System.out.println(body);
 	}
+	
+	
+	
 }

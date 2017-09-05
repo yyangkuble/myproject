@@ -61,10 +61,10 @@ public class MyService {
 				result.setErrorCode(1);
 			}else {
 				result.setData(baseDao.getModelById(entity));
+				intecept.saveAndUpdateEnd(entity,result, UpdateAndInsertAndDeleteIntecept.HandleType.update);
 			}
 			return count;
 		}
-		intecept.saveAndUpdateEnd(entity,result, UpdateAndInsertAndDeleteIntecept.HandleType.update);
 		return 0;
 	}
 	public int update(String sql) {
@@ -123,10 +123,10 @@ public class MyService {
 				result.setErrorCode(1);
 			}else {
 				result.setData(baseDao.getModelById(entity));
+				intecept.saveAndUpdateEnd(entity,result, UpdateAndInsertAndDeleteIntecept.HandleType.save);
 			}
 			return count;
 		}
-		intecept.saveAndUpdateEnd(entity,result, UpdateAndInsertAndDeleteIntecept.HandleType.save);
 		return 0;
 	}
 	/**
